@@ -44,15 +44,15 @@ const Pagination = (
 
   return (
     <>
-        <div className="flex items-center justify-center gap-2 mt-10 mb-6 flex-wrap">
+        <div className="flex items-center justify-center gap-2 mt-10 mb-6 flex-wrap dark:text-gray-50 dark:bg-gray-800">
 
             {/* Prev button */}
             <button 
                 onClick={() => onPageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="px-3 py-1 border rounded disabled:opcaity-40"
+                className="px-3 py-1 border border-gray-800 dark:border-gray-100 rounded disabled:opcaity-40"
             >
-                Prev
+                &larr; Previous
             </button>
 
             {/* Page Numbers */}
@@ -69,7 +69,7 @@ const Pagination = (
                     <button
                         key={index}
                         onClick = {() => onPageChange(page as number)}
-                        className={` px-3 py-1 border rounded
+                        className={` px-3 py-1 border border-gray-800 dark:border-gray-100 rounded
                                 ${
                                     currentPage === page
                                     ? "bg-blue-500 text-white border-blue-500"
@@ -86,9 +86,9 @@ const Pagination = (
             <button
                 onClick = {() => onPageChange(currentPage+1)}
                 disabled={currentPage === totalPages}
-                className="px-3 py-1 border rounded disabled:opcaity-40"
+                className="px-3 py-1 border border-gray-800 dark:border-gray-100 rounded disabled:opcaity-40"
             >
-                Next
+                Next &rarr;
             </button>
 
         </div>

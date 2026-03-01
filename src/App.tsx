@@ -5,7 +5,10 @@ import { fetchIssues } from "./services/githubService"
 import Pagination from "./components/Pagination.tsx"
 import {useSearchParams } from "react-router-dom"
 import {useTheme} from "./hooks/useTheme"
-
+import { useDebounce } from "./hooks/useDebounce.ts"
+import LanguageSelect from "./components/LanguageSelect.tsx"
+import { formatDistanceToNow } from "date-fns"
+import { FaGithub } from "react-icons/fa"
 
 function App() {
 
@@ -15,13 +18,15 @@ function App() {
   
   const [totalCount, setTotalCount] = useState<number>(0)
   const perPage = 20
-
+  
   const [searchParams, setSearchParams] = useSearchParams()
   const page = Number(searchParams.get("page")) || 1
   const language = searchParams.get("language") || ""
   const search = searchParams.get("search") || ""
   const {theme, toggleTheme} = useTheme()
-
+  const [searchInput, setSearchInput] = useState(search)
+  const debouncedSearch = useDebounce(searchInput, 500)
+  
   const filters: Filters = {
     page,
     perPage,
@@ -29,76 +34,143 @@ function App() {
     search: search || undefined,
   }
 
+  useEffect(()=>{
+    const params = new URLSearchParams(searchParams)
+
+    if(debouncedSearch){
+      params.set("search", debouncedSearch)
+    } else {
+      params.delete("search")
+    }
+
+    params.set("page", "1")
+
+    setSearchParams(params)
+  }, [debouncedSearch])
+
   useEffect(() => {
+    setSearchInput(search)
+  }, [search])
+
+  useEffect(() => {
+    const controller = new AbortController()
     const loadIssues = async() => {
       try {
         setLoading(true)
-        const data = await fetchIssues(filters)
+        const data = await fetchIssues(filters, controller.signal)
         setIssues(data.items)
         setTotalCount(data.total_count)
       } catch (error:any) {
+        if(error.name === "AbortError"){
+          return;
+        }
         setError("Something went wrong")
         console.error(error.message)
       } finally{
         setLoading(false)
       }
     }
-
     loadIssues()
+
+    return () => {
+      controller.abort()
+    }
   }, [page, language, search])
 
   const totalPages = Math.ceil(totalCount/perPage)
 
-  if(loading) {
-    return <div className="p-10 text-xl">Loading issues...</div>
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen text-lg animate-pulse 
+        bg-gradient-to-br from-gray-50 to-gray-200 
+        dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-gray-50">
+        Loading issues...
+      </div>
+    )
+  }
+  
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen text-lg text-red-500 animate-pulse 
+        bg-gradient-to-br from-gray-50 to-gray-200 
+        dark:from-gray-900 dark:to-gray-800">
+        {error}
+      </div>
+    )
   }
 
-  if(error) {
-    return <div className="p-10 text-red-500">{error}</div>
+  const languageColors: Record<string, string> = {
+    typescript: "bg-blue-500",
+    javascript: "bg-yellow-500",
+    python: "bg-green-500",
+    go: "bg-cyan-500",
+    java: "bg-orange-500",
   }
-
+  
   return (
     <>
-    {/* Issues */}
-      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-10 transition-colors">
-      <div className="flex justify-between items-center mb-6">
-  <h1 className="text-3xl font-bold">
-    Good First Issues Explorer 🚀
-  </h1>
+      <div className="min-h-screen bg-gradient-to-br 
+        from-gray-50 to-gray-200 
+        dark:from-gray-900 dark:to-gray-800 
+        text-gray-900 dark:text-gray-100 
+        transition-colors">
 
-  <button
-    onClick={toggleTheme}
-    className="px-4 py-2 border rounded hover:bg-gray-100 dark:hover:bg-gray-700"
-  >
-    {theme === "dark" ? "☀ Light Mode" : "🌙 Dark Mode"}
-  </button>
-</div>
-
-<div className="flex flex-col md:flex-row gap-4 mb-6">
-
-{/* 🔎 Search Input */}
-<input
-  type="text"
-  placeholder="Search issues..."
-  value={search}
-  onChange={(e) => {
-    const params = new URLSearchParams(searchParams)
-    params.set("search", e.target.value)
-    params.set("page", "1") // reset page when filtering
-    setSearchParams(params)
-  }}
-  className="px-4 py-2 border rounded w-full md:w-1/3
-    bg-white dark:bg-gray-800"
-/>
-
-{/* 🏷 Language Dropdown */}
-<select
+          {/* Header */}
+          <div className="flex justify-between items-center px-6 py-4 sticky top-0 z-50 bg-white/70 dark:bg-gray-900/70 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-700/50 shadow-sm">
+            <div>
+              <div className="flex items-center gap-4">
+              <FaGithub className="text-4xl text-gray-800 dark:text-gray-200 hover:scale-110 transition-transform duration-200" />
+              <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500
+                bg-clip-text text-transparent">
+                Good First Issues
+              </h1>
+              </div>
+              <p className="text-gray-500 dark:text-gray-400 mt-1">
+                Discover beginner-friendly open source issues 🚀
+              </p>
+            </div>
+  
+            <button
+              onClick={toggleTheme}
+              className="px-4 py-2 rounded-xl border 
+                bg-white dark:bg-gray-800
+                shadow-sm hover:scale-105 transition-transform"
+            >
+              {theme === "dark" ? "☀ Light" : "🌙 Dark"}
+            </button>
+          </div>
+  
+        <div className="max-w-5xl mx-auto px-6 py-10">
+   
+          {/* Filters */}
+          <div className="flex flex-col md:flex-row gap-4 mb-8 items-center">
+  
+            {/* Search */}
+            <div className="relative w-full md:w-1/2">
+              <input
+                type="text"
+                placeholder="Search issues..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                autoFocus
+                className="w-full pl-10 pr-4 py-3 rounded-xl border 
+                  bg-white dark:bg-gray-800
+                  focus:ring-2 focus:ring-blue-500
+                  outline-none transition"
+              />
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                🔍
+              </span>
+            </div>
+  
+            {/* Language */}
+            <LanguageSelect
   value={language}
-  onChange={(e) => {
+  onChange={(value) => {
     const params = new URLSearchParams(searchParams)
 
-    if (e.target.value) {
-      params.set("language", e.target.value)
+    if (value) {
+      params.set("language", value)
     } else {
       params.delete("language")
     }
@@ -106,45 +178,81 @@ function App() {
     params.set("page", "1")
     setSearchParams(params)
   }}
-  className="px-4 py-2 border rounded w-full md:w-1/4
-    bg-white dark:bg-gray-800"
->
-  <option value="">All Languages</option>
-  <option value="typescript">TypeScript</option>
-  <option value="javascript">JavaScript</option>
-  <option value="python">Python</option>
-  <option value="go">Go</option>
-  <option value="java">Java</option>
-</select>
-
-{/* 🔄 Reset Button */}
-<button
-  onClick={() => setSearchParams({ page: "1" })}
-  className="px-4 py-2 bg-red-500 text-white rounded"
->
-  Reset
-</button>
-
-</div>
-
-        <div className="space-y-4">
-          {issues?.map(issue => (
-            <div key={issue.id}
-            className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow"
+/>  
+            {/* Reset */}
+            <button
+              onClick={() => setSearchParams({ page: "1" })}
+              className="px-5 py-3 rounded-xl bg-red-500 
+                hover:bg-red-600 transition 
+                text-white font-medium shadow-sm"
             >
-              <a href={issue.html_url} target="_blank" rel="noopener noreferrer">{issue.title}</a>
-              <p className="text-sm text-gray-500 mt-2">Opened by {issue.user.login}</p>
-            </div>
-          ))}
+              Reset
+            </button>
+  
+          </div>
+  
+          {/* Issues */}
+          <div className="space-y-6">
+            {issues?.map(issue => (
+              <div
+                key={issue.id}
+                className="bg-white dark:bg-gray-800 
+                  p-6 rounded-2xl shadow-md
+                  hover:shadow-xl hover:-translate-y-1
+                  transition-all duration-200"
+              >
+                <div className="flex justify-between items-start">
+                  <a
+                    href={issue.html_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-lg font-semibold hover:underline"
+                  >
+                    {issue.title}
+                  </a>
+
+                  {language && (
+                    <span
+                      className={`text-xs text-white px-3 py-1 rounded-full font-medium ${languageColors[language] || "bg-gray-500"}`}
+                    >
+                      {language.charAt(0).toUpperCase() + language.slice(1)}
+                    </span>
+                  )}
+
+                </div>
+  
+                <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
+
+        <span>
+          Opened by <span className="font-medium">{issue.user.login}</span>
+        </span>
+
+        <span>•</span>
+
+        <span>
+          {formatDistanceToNow(new Date(issue.created_at), {
+            addSuffix: true,
+          })}
+        </span>
+
+      </div>
+              </div>
+            ))}
+          </div>
+  
         </div>
       </div>
-
+  
       {/* Pagination */}
-      <Pagination 
-        currentPage={page}
-        totalPages={totalPages}
-        onPageChange={(newPage) => setSearchParams({page: newPage.toString()})}
-      />
+      <div className="bg-gray-200 dark:bg-gray-800 py-2">
+        <Pagination 
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={(newPage) => 
+            setSearchParams({ page: newPage.toString() })
+          }
+        />
+      </div>
     </>
   )
 }

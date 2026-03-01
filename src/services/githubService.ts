@@ -16,14 +16,15 @@ const buildQuery = (filters: Filters): string => {
 }
 
 export const fetchIssues = async (
-    filters: Filters
+    filters: Filters,
+    signal?: AbortSignal
 ): Promise<GithubSearchResponse> => {
 
     const query = buildQuery(filters)
 
     const url = `https://api.github.com/search/issues?q=${query}&page=${filters.page}&per_page=${filters.perPage}`
 
-    const response = await fetch(url)
+    const response = await fetch(url, {signal})
 
     if(!response.ok){
         throw new Error("Failed to fetch issues")
