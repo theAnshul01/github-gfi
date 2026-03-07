@@ -26,10 +26,11 @@ This document outlines the planned direction for **github-gfi** — what's being
 - Light/dark theme toggle (`useTheme` hook)
 - Debounced search input (`useDebounce` hook)
 - Deployed on Vercel
+- Weekend 1 - Graceful Error handling and Sort Options
 
 ---
 
-## 📅 Weekend 1 — March 7–8, 2026
+## 📅 Weekend 1 — March 7–8, 2026 (Shipped ✅)
 
 Focus: **User experience polish and resilient error states**
 
