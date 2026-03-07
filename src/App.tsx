@@ -9,12 +9,15 @@ import { useDebounce } from "./hooks/useDebounce.ts"
 import LanguageSelect from "./components/LanguageSelect.tsx"
 import { formatDistanceToNow } from "date-fns"
 import { FaGithub } from "react-icons/fa"
+import ErrorMessage from "./components/ErrorMessage.tsx"
+import EmptyState from "./components/EmptyState.tsx"
 
 function App() {
 
-  const [issues, setIssues] = useState<GithubIssue[]>()
-  const [loading, setLoading] = useState<boolean>(true)
+  const [issues, setIssues] = useState<GithubIssue[]>([])
+  const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
+  const [emptyFlag, setEmptyFlag] = useState<boolean>(false)
   
   const [totalCount, setTotalCount] = useState<number>(0)
   const perPage = 20
@@ -57,15 +60,21 @@ function App() {
     const loadIssues = async() => {
       try {
         setLoading(true)
+        setError(null)
         const data = await fetchIssues(filters, controller.signal)
         setIssues(data.items)
+        if(data.items.length === 0){
+          setEmptyFlag(true)
+        }
         setTotalCount(data.total_count)
       } catch (error:any) {
         if(error.name === "AbortError"){
           return;
         }
-        setError("Something went wrong")
-        console.error(error.message)
+        if(error instanceof Error){
+          setError(error.message)
+        }
+        console.log(error)
       } finally{
         setLoading(false)
       }
@@ -91,12 +100,12 @@ function App() {
   
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen text-lg text-red-500 animate-pulse 
-        bg-gradient-to-br from-gray-50 to-gray-200 
-        dark:from-gray-900 dark:to-gray-800">
-        {error}
-      </div>
+      <ErrorMessage type={error as any}/>
     )
+  }
+
+  if(!loading && emptyFlag) {
+      return <EmptyState />
   }
 
   const languageColors: Record<string, string> = {
@@ -109,6 +118,7 @@ function App() {
   
   return (
     <>
+    
       <div className="min-h-screen bg-gradient-to-br 
         from-gray-50 to-gray-200 
         dark:from-gray-900 dark:to-gray-800 

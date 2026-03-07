@@ -23,12 +23,22 @@ export const fetchIssues = async (
     const query = buildQuery(filters)
 
     const url = `https://api.github.com/search/issues?q=${query}&page=${filters.page}&per_page=${filters.perPage}`
+    try{
+        const response = await fetch(url, {signal})
+        
+        if(!response.ok){
+            if(response.status === 403){
+                throw new Error("RATE_LIMIT")
+            }
+            throw new Error("API_ERROR")
+        }
+        return response.json() as Promise<GithubSearchResponse>
+    }catch(error){
+        if(error instanceof Error){
+            throw error
+        }
 
-    const response = await fetch(url, {signal})
-
-    if(!response.ok){
-        throw new Error("Failed to fetch issues")
+        throw new Error("NETWORK_ERROR")
     }
-
-    return response.json() as Promise<GithubSearchResponse>
+ 
 }
