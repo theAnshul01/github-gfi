@@ -15,6 +15,13 @@ const buildQuery = (filters: Filters): string => {
     return `${baseQuery}${languageQuery}${searchQuery}`
 }
 
+const sortMap = {
+    newest : { sort: "created", order: "desc"},
+    oldest : { sort: "created", order: "asc"},
+    "most-commented" : { sort: "comments", order: "desc"},
+    "recently-updated" : { sort: "updated", order: "desc"}
+}
+
 export const fetchIssues = async (
     filters: Filters,
     signal?: AbortSignal
@@ -22,7 +29,11 @@ export const fetchIssues = async (
 
     const query = buildQuery(filters)
 
-    const url = `https://api.github.com/search/issues?q=${query}&page=${filters.page}&per_page=${filters.perPage}`
+    const sortParams = filters.sort 
+    ? sortMap[filters.sort]
+    : { sort: "created", order: "desc"}
+
+    const url = `https://api.github.com/search/issues?q=${query}&sort=${sortParams.sort}&order=${sortParams.order}&page=${filters.page}&per_page=${filters.perPage}`
     try{
         const response = await fetch(url, {signal})
         
