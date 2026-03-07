@@ -11,6 +11,7 @@ import { formatDistanceToNow } from "date-fns"
 import { FaGithub } from "react-icons/fa"
 import ErrorMessage from "./components/ErrorMessage.tsx"
 import EmptyState from "./components/EmptyState.tsx"
+import SortSelect from "./components/SortSelect.tsx"
 
 function App() {
 
@@ -26,6 +27,7 @@ function App() {
   const page = Number(searchParams.get("page")) || 1
   const language = searchParams.get("language") || ""
   const search = searchParams.get("search") || ""
+  const sort = searchParams.get("sort") || "newest"
   const {theme, toggleTheme} = useTheme()
   const [searchInput, setSearchInput] = useState(search)
   const debouncedSearch = useDebounce(searchInput, 500)
@@ -35,6 +37,7 @@ function App() {
     perPage,
     language: language || undefined,
     search: search || undefined,
+    sort: sort as any
   }
 
   useEffect(()=>{
@@ -84,7 +87,7 @@ function App() {
     return () => {
       controller.abort()
     }
-  }, [page, language, search])
+  }, [page, language, search, sort])
 
   const totalPages = Math.ceil(totalCount/perPage)
 
@@ -189,9 +192,21 @@ function App() {
     setSearchParams(params)
   }}
 />  
+
+            <SortSelect
+              value={sort}
+              onChange={(value) => {
+                const params = new URLSearchParams(searchParams)
+
+                params.set("sort", value)
+                params.set("page", "1")
+
+                setSearchParams(params)
+              }}
+            />
             {/* Reset */}
             <button
-              onClick={() => setSearchParams({ page: "1" })}
+              onClick={() => setSearchParams({ page: "1", sort: "newest" })}
               className="px-5 py-3 rounded-xl bg-red-500 
                 hover:bg-red-600 transition 
                 text-white font-medium shadow-sm"

@@ -3,4 +3,7 @@ export type Filters = {
     perPage: number;
     language?: string;
     search?: string
+    sort?: SortOption
 }
+
+export type SortOption = | "newest" | "oldest" | "most-commented" | "recently-updated"
