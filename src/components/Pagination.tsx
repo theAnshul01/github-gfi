@@ -73,7 +73,7 @@ const Pagination = (
                                 ${
                                     currentPage === page
                                     ? "bg-blue-500 text-white border-blue-500"
-                                    : "hover:bg-gray-100"
+                                    : "hover:bg-gray-100 dark:hover:text-gray-600"
                                 }
                             `}
                     >
