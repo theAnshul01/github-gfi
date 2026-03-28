@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from "react"
+import { useEffect, useState, useRef } from "react"
 import type { GithubIssue } from "./types/github"
 import type { Filters } from "./types/filters.ts"
 import { fetchIssues } from "./services/githubService"
@@ -13,10 +13,6 @@ import ErrorMessage from "./components/ErrorMessage.tsx"
 import EmptyState from "./components/EmptyState.tsx"
 import SortSelect from "./components/SortSelect.tsx"
 import { useAuth } from "./hooks/useAuth.ts"
-import { FaBookmark, FaRegBookmark } from "react-icons/fa";
-import { addBookmark, getBookmarks, removeBookmark } from "./services/bookmarkService.ts"
-import type { Bookmark } from "./types/bookmarks.ts"
-import BookmarksWidget from "./components/BookmarksWidget.tsx"
 
 
 function App() {
@@ -37,11 +33,10 @@ function App() {
   const { theme, toggleTheme } = useTheme()
   const [searchInput, setSearchInput] = useState(search)
   const debouncedSearch = useDebounce(searchInput, 500)
-  const [bookmarks, setBookmarks] = useState<Bookmark[]>([])
 
   const { user, loading: authLoading, authError, isConfigured, signInWithGithub, signOut } = useAuth()
   console.log("user: ", user)
-
+  
   const filters: Filters = {
     page,
     perPage,
@@ -52,7 +47,7 @@ function App() {
 
   const isInitialMount = useRef(true)
 
-  useEffect(() => {
+  useEffect(()=>{
     // Skip on initial mount to avoid resetting page on first render
     if (isInitialMount.current) {
       isInitialMount.current = false
@@ -112,19 +107,7 @@ function App() {
     }
   }, [page, language, search, sort])
 
-  const loadBookmarks = useCallback(async () => {
-    if (!user) return;
-    const data = await getBookmarks(user.id);
-    setBookmarks(data);
-  }, [user])
-
-  useEffect(() => {
-    loadBookmarks();
-  }, [loadBookmarks]);
-
-  const bookmarkedIds = new Set(bookmarks.map(b => b.issue_id))
-
-  const totalPages = Math.min(Math.ceil(totalCount / perPage), 50)
+  const totalPages = Math.min(Math.ceil(totalCount/perPage),50)
 
   if (loading) {
     return (
@@ -198,68 +181,66 @@ function App() {
                 Good First Issues
               </h1>
             </div>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">
-              Discover beginner-friendly open source issues 🚀
-            </p>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <button
-              onClick={toggleTheme}
-              className="px-4 py-2 rounded-xl border 
+  
+            <div className="flex items-center gap-4">
+              <button
+                onClick={toggleTheme}
+                className="px-4 py-2 rounded-xl border 
                   bg-white dark:bg-gray-800
                   shadow-sm hover:scale-105 transition-transform"
-            >
-              {theme === "dark" ? "☀ Light" : "🌙 Dark"}
-            </button>
+              >
+                {theme === "dark" ? "☀ Light" : "🌙 Dark"}
+              </button>
 
-            <div className="flex items-center gap-3">
-              {authError && (
-                <span className="text-xs text-red-500 max-w-[200px] truncate" title={authError}>
-                  ⚠️ {authError}
-                </span>
-              )}
-
-              {!isConfigured ? (
-                <span className="text-xs px-3 py-2 rounded-xl bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 border border-yellow-300 dark:border-yellow-700">
-                  ⚠️ Auth not configured
-                </span>
-              ) : authLoading ? (
-                <span className="text-sm text-gray-400 animate-pulse">Loading...</span>
-              ) : user ? (
-                <div className="flex items-center gap-3">
-                  {user.user_metadata?.avatar_url && (
-                    <img
-                      src={user.user_metadata.avatar_url}
-                      alt="avatar"
-                      className="w-8 h-8 rounded-full border-2 border-purple-500"
-                    />
-                  )}
-                  <span className="text-sm font-medium hidden md:inline">
-                    {user.user_metadata?.user_name || user.email}
+              <div className="flex items-center gap-3">
+                {authError && (
+                  <span className="text-xs text-red-500 max-w-[200px] truncate" title={authError}>
+                    ⚠️ {authError}
                   </span>
-                  <button
-                    onClick={signOut}
-                    className="px-4 py-2 rounded-xl border bg-red-500/10 hover:bg-red-500/20 
+                )}
+                
+                {!isConfigured ? (
+                  <span className="text-xs px-3 py-2 rounded-xl bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 border border-yellow-300 dark:border-yellow-700">
+                    ⚠️ Auth not configured
+                  </span>
+                ) : authLoading ? (
+                  <span className="text-sm text-gray-400 animate-pulse">Loading...</span>
+                ) : user ? (
+                  <div className="flex items-center gap-3">
+                    {user.user_metadata?.avatar_url && (
+                      <img
+                        src={user.user_metadata.avatar_url}
+                        alt="avatar"
+                        className="w-8 h-8 rounded-full border-2 border-purple-500"
+                      />
+                    )}
+                    <span className="text-sm font-medium hidden md:inline">
+                      {user.user_metadata?.user_name || user.email}
+                    </span>
+                    <button
+                      onClick={signOut}
+                      className="px-4 py-2 rounded-xl border bg-red-500/10 hover:bg-red-500/20 
                         text-red-600 dark:text-red-400 border-red-300 dark:border-red-700
                         transition-all hover:scale-105 font-medium text-sm"
-                  >
-                    Logout
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={signInWithGithub}
-                  className="px-4 py-2 rounded-xl border 
+                    >
+                      Logout
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={signInWithGithub}
+                    className="px-4 py-2 rounded-xl border 
                       bg-gray-900 dark:bg-white
                       text-white dark:text-gray-900
                       hover:scale-105 transition-all font-medium text-sm
                       flex items-center gap-2 shadow-sm"
-                >
-                  <FaGithub /> Login with GitHub
-                </button>
-              )}
+                  >
+                    <FaGithub /> Login with GitHub
+                  </button>
+                )}
+              </div>
             </div>
+
           </div>
 
         </div>
