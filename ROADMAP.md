@@ -67,9 +67,9 @@ Allow users to sort issues beyond the default GitHub ordering so they can surfac
 
 ---
 
-## 📅 Weekend 2 — March 14–15, 2026
+## ✅ Weekend 2 — March 14–15, 2026 (Shipped ✅)
 
-Focus: **Persistence, auth, and test coverage**
+Focus: **Persistence and auth**
 
 ### 🔖 Bookmark Issues (with Supabase Auth)
 
@@ -96,34 +96,13 @@ Let users save interesting issues so they can come back to them later. This will
 
 ---
 
-### 🧪 Tests
-
-Set up a testing foundation so future contributors can ship with confidence.
-
-**Planned work:**
-
-**Setup**
-- Install and configure **Vitest** + **React Testing Library** + `@testing-library/user-event`
-- Add `vitest` script to `package.json`
-- Add a GitHub Actions CI workflow (`.github/workflows/ci.yml`) that runs type-check, lint, and tests on every pull request
-
-**Test targets for this sprint:**
-- `githubService.ts` — mock the GitHub API with `vi.mock` and test success, empty results, rate-limit error, and network failure
-- `useDebounce.ts` — test that the value is debounced correctly using fake timers
-- `LanguageSelect.tsx` — renders options, calls `onChange` with the correct value
-- `Pagination.tsx` — disables Prev on page 1, disables Next on the last page, calls `onPageChange` correctly
-- `SortSelect.tsx` — renders all sort options and fires the correct callback (from Weekend 1)
-
-**Files likely touched:** `src/services/githubService.test.ts` (new), `src/hooks/useDebounce.test.ts` (new), `src/components/*.test.tsx` (new), `.github/workflows/ci.yml` (new), `vite.config.ts` (update for test config)
-
----
-
 ## 💡 Planned (Unscheduled)
 
 These are confirmed directional goals without a specific sprint date yet.
 
 | Feature | Description |
 |---|---|
+| **Tests** | Set up **Vitest** + **React Testing Library** for unit and component tests; add GitHub Actions CI workflow |
 | **Shareable URLs** | Sync search, language, sort, and page to URL query params so results are bookmarkable and shareable |
 | **Mobile responsiveness** | Full Tailwind responsive pass across Navbar, FilterBar, issue cards, and Pagination |
 | **GitHub token input** | Let users paste a PAT to raise the API rate limit from 60 → 5,000 req/hr |
