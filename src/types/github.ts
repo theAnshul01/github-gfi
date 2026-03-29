@@ -5,6 +5,7 @@ export type GithubIssue = {
     title:string;
     html_url: string;
     created_at: string;
+    repository_url: string;
     user: {
         login: string;
     }
