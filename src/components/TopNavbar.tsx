@@ -5,7 +5,7 @@ const TopNavbar = () => {
 
   return (
     <nav>
-      <div className="bg-slate-900 mb-2 px-2 font-space">
+      <div className="h-16 bg-slate-900 mb-2 px-2 font-mono">
         <div className="flex items-center justify-between">
           <h1 className="text-[#14e00d] font-semibold py-4 px-3 text-xl">
             [GOOD_FIRST_ISSUES]
@@ -23,7 +23,7 @@ const TopNavbar = () => {
           <div className="flex items-end justify-between gap-3 text-[#14e00d]">
             <div className="flex items-center justify-between">
               <label htmlFor="repo-search">
-                <LuSearchCode className="border text-green-600 border-gray-700 text-xl rounded-sm cursor-pointer"/>
+                <LuSearchCode className="border text-green-600 border-gray-700 text-2xl rounded-sm cursor-pointer"/>
               </label>
               <input
                 id="repo-search"

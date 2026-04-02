@@ -9,6 +9,7 @@ export default {
     extend: {
       fontFamily:{
         space: ["Space Grotesk", "sans-serif"],
+        mono: ["JetBrains Mono", "monospace"],
       }
     },
   },
