@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-import { LuSearchCode } from "react-icons/lu";
->>>>>>> 6d41f23 (navbar: added top navbar)
 import { NavLink } from "react-router-dom";
 
 const TopNavbar = () => {
