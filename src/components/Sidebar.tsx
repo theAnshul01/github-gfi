@@ -7,7 +7,7 @@ import { FaDollarSign } from "react-icons/fa";
 
 const Sidebar = () => {
   return (
-      <aside className="w-64 h-[calc(100vh-60px)] bg-slate-900 text-[#14e00d] fixed left-0 top-16 p-4 font-mono">
+      <aside className="w-64 h-[calc(100vh-60px)] bg-slate-900 text-[#14e00d] fixed left-0 top-16 p-4 font-mono border-r border-t border-gray-500">
         <div>
             <h1 className="flex items-center gap-2"><MdTerminal/>[DIRECTORY_TREE]</h1>
             <p className="italic text-sm font-light text-green-700">root@user:~/github-gfi</p>

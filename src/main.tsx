@@ -9,11 +9,13 @@ import './index.css'
 import App from './App.tsx'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import ErrorBoundary from "./components/ErrorBoundary.tsx"
+import TopNavbar from './components/TopNavbar.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <ErrorBoundary>
+        <TopNavbar/>
         <Routes>
           <Route path="/*" element={<App />} />
         </Routes>
