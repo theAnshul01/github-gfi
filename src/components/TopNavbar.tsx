@@ -4,20 +4,20 @@ import { NavLink } from "react-router-dom";
 const TopNavbar = () => {
 
   return (
-    <nav>
-      <div className="h-16 bg-slate-900 mb-2 px-2 font-mono">
+    <nav className="sticky top-0 border-b border-gray-500">
+      <div className="h-16 bg-slate-900 px-2 font-mono">
         <div className="flex items-center justify-between">
           <h1 className="text-[#14e00d] font-semibold py-4 px-3 text-xl">
             [GOOD_FIRST_ISSUES]
           </h1>
 
           <div className="flex items-center justify-between gap-4 text-sm cursor-pointer">
-            <NavLink to="/" className={({isActive}) => `hover:underline-offset-4 hover:underline ${isActive ? "text-green-500" : "text-gray-600"}`}>home</NavLink>
+            <NavLink to="/" className={({isActive}) => `hover:underline-offset-4 hover:underline ${isActive ? "text-green-500" : "text-gray-600"}`}>Home</NavLink>
             <NavLink to="/issues" className={({isActive}) => `hover:underline-offset-4 hover:underline ${isActive ? "text-green-500" : "text-gray-600"}`}>Issues</NavLink>
 
             {/* // TODO:  navlink destination to be updated  */}
 
-            <NavLink to="bookmark" className={({ isActive }) => `hover:underline-offset-4 hover:underline ${isActive ? "text-green-500" : "text-gray-600"}`}>bookmarks</NavLink>
+            <NavLink to="bookmark" className={({ isActive }) => `hover:underline-offset-4 hover:underline ${isActive ? "text-green-500" : "text-gray-600"}`}>Bookmarks</NavLink>
           </div>
 
           <div className="flex items-end justify-between gap-3 text-[#14e00d]">
