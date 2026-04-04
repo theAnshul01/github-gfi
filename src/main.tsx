@@ -10,6 +10,7 @@ import App from './App.tsx'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import ErrorBoundary from "./components/ErrorBoundary.tsx"
 import TopNavbar from './components/TopNavbar.tsx';
+import IssuesPage from './pages/IssuesPage.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -18,6 +19,7 @@ createRoot(document.getElementById('root')!).render(
         <TopNavbar/>
         <Routes>
           <Route path="/*" element={<App />} />
+          <Route path="/issues" element={<IssuesPage/>}/>
         </Routes>
       </ErrorBoundary>
     </BrowserRouter>

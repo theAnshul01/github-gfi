@@ -21,7 +21,7 @@ const Footer = () => {
         <footer className='fixed bottom-0 min-w-full bg-[#2ce207] font-mono text-sm px-4'>
             <div className='flex items-center justify-between'>
                 <div className='flex items-center justify-between gap-4'>
-                    <p className="flex items-center justify-between"> <p> [STATUS: {status[randomStatusVal]}] | </p> </p>
+                    <p> [STATUS: {status[randomStatusVal]}] | </p>
                     <p>ENCODING: UTF-8 |</p>
                     <p>POS: LN {randomLn}, COL {randomCol}</p>
                 </div>

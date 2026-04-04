@@ -21,7 +21,7 @@ const TopNavbar = () => {
           </div>
 
           <div className="flex items-end justify-between gap-3 text-[#14e00d]">
-            <div className="flex items-center justify-between">
+            {/* <div className="flex items-center justify-between">
               <label htmlFor="repo-search">
                 <LuSearchCode className="border text-green-600 border-gray-700 text-2xl rounded-sm cursor-pointer"/>
               </label>
@@ -31,7 +31,7 @@ const TopNavbar = () => {
                 placeholder="$ grep issues --label='good-first-issues'"
                 className="placeholder-green-800 border border-gray-700 bg-slate-900 rounded-sm px-2 focus:outline-none focus:ring-1 focus:ring-green-500 text-sm"
               />
-            </div>
+            </div> */}
             <p>[Session ID]</p>
             <p>User Profile</p>
           </div>
