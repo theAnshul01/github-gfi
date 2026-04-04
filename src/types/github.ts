@@ -1,4 +1,4 @@
-// type of any issue from Github - https://api.github.com/search/issues?q=label:"good first issue"+state:open
+// type of any good first issue from Github - https://api.github.com/search/issues?q=label:"good first issue"+state:open
 
 export type GithubIssue = {
     id:number;
@@ -8,7 +8,9 @@ export type GithubIssue = {
     repository_url: string;
     user: {
         login: string;
-    }
+        avatar_url: string;
+    };
+    
 }
 
 // type of entire API response
