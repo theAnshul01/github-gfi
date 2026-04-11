@@ -27,7 +27,7 @@ const Footer = () => {
                 </div>
                 <div className='flex items-center justify-between gap-4'>
                     <div className="flex items-center justify-between gap-1"><FaGithub /> <a href="https://github.com/theAnshul01/github-gfi" target="_blank">GITHUB</a></div>
-                    <p>X.COMMUNICATION</p>
+                    <p className="hidden">X.COMMUNICATION</p>
                     <p>[<Clock/>]</p>
                 </div>
             </div>

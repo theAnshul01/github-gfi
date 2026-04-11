@@ -4,6 +4,8 @@ import type { GithubIssue } from "../types/github"
 import { formatDistanceToNow } from "date-fns"
 import IssuePagePagination from "../components/IssuePagePagination"
 import { useSearchParams } from "react-router-dom"
+import SpinnerElement from "../components/SpinnerElement"
+import Footer from "../components/Footer"
 
 
 const IssuesPage = () => {
@@ -14,6 +16,7 @@ const IssuesPage = () => {
     const perPage = Number(searchParams.get("per_page")) || 20
     const language = searchParams.get("language")
     const label = searchParams.get("label")
+    const [loading, setLoading] = useState<boolean>(false)
 
     let query = "state:open"
 
@@ -35,6 +38,7 @@ const IssuesPage = () => {
     useEffect(() => {
         async function fetchIssues(){
             try {
+                setLoading(true)
                 const response = await fetch(url)
                 if(!response.ok){
                     throw new Error("An error occurred while fetching issues")
@@ -44,7 +48,9 @@ const IssuesPage = () => {
                 setTotalPage(Math.min(Math.ceil(data.total_count / perPage),50))
 
             } catch (error) {
-                console.log(error)
+                console.error(error)
+            } finally {
+                setLoading(false)
             }
         }
         fetchIssues()
@@ -59,7 +65,7 @@ const IssuesPage = () => {
                     <div className="flex items-center bg-slate-800 text-green-500 gap-2">
                         <p className="px-2 border-r border-slate-500">&gt;</p>
                         <label htmlFor="search" className="flex-1">
-                            <input type="text" placeholder=" FILTER_BY_METADATA..." className="w-full py-2 px-2 my-2 placeholder-slate-500 bg-slate-800 focus:outline-none focus:ring-1 focus:ring-green-500" />
+                            <input disabled type="text" placeholder=" FILTER_BY_METADATA..." className="opacity-50 cursor-not-allowed w-full py-2 px-2 my-2 placeholder-slate-500 bg-slate-800 focus:outline-none focus:ring-1 focus:ring-green-500" />
                         </label>
                     </div>
                 </section>
@@ -76,7 +82,8 @@ const IssuesPage = () => {
                         </tr>
                     </thead>
 
-                    <tbody>
+                    {loading && <div className="h-96 ml-64 w-full flex items-center justify-center"><SpinnerElement /></div>}
+                    {!loading && <tbody>
                        {issues.map((issue) => (
                         <tr key={issue.id} className="hover:bg-gray-900">
                             <td className="px-4 py-3 text-right text-[#15e030]">#{String(issue.id).slice(-5)}</td>
@@ -86,19 +93,19 @@ const IssuesPage = () => {
                                <td className="text-2xl text-center hover:text-[#11d11b]"><a href={issue.html_url} target="_blank"> &rarr;</a></td>
                         </tr>
                        ))}
-                    </tbody> 
+                    </tbody> }
                 </table>
 
                 
             </main>
-            <section className="ml-64 bg-slate-950">
+            <section className="ml-64 bg-slate-950 mb-4">
                 <IssuePagePagination 
                     page = {page}
                     totalPage={totalPage}
                     perPage={perPage}
                 />
             </section>
-            
+            <Footer />
         </div>
     )
 }
