@@ -5,12 +5,12 @@ import SpinnerElement from "../components/SpinnerElement"
 
 const Home = () => {
 
-    const[issues, setIssues] = useState<GithubIssue[]>([])
+    const [issues, setIssues] = useState<GithubIssue[]>([])
     const [total, setTotal] = useState<number>(0)
     const [loading, setLoading] = useState<boolean>(false)
-    const url = "https://api.github.com/search/issues?q=good+first+issue+state:open"
-    
-    useEffect(()=>{
+    const url = "https://api.github.com/search/issues?q=good+first+issue+state:open&sort=created"
+
+    useEffect(() => {
         async function fetchIssues() {
             try {
                 setLoading(true)
@@ -24,12 +24,12 @@ const Home = () => {
                 setTotal(data.total_count)
             } catch (error) {
                 console.error(error)
-            }finally{
+            } finally {
                 setLoading(false)
             }
         }
         fetchIssues()
-    },[])
+    }, [])
 
     return (
         <main className="bg-slate-950 ml-64 font-mono min-h-lvh px-6 py-8">
@@ -39,15 +39,15 @@ const Home = () => {
                     <h1 className="text-5xl text-[#efecec] mx-0">[OPEN_ISSUES]</h1>
                 </header>
                 <div className="text-sm py-4 flex items-center gap-4 p-1">
-                    <p className="bg-slate-800 text-[#6d6b6b] rounded-sm shadow-md text-xs p-1">{`[ TOTAL_ISSUES: ${Math.floor(total/1000)}k+ ]`}</p>
+                    <p className="bg-slate-800 text-[#6d6b6b] rounded-sm shadow-md text-xs p-1">{`[ TOTAL_ISSUES: ${Math.floor(total / 1000)}k+ ]`}</p>
                     <p className="bg-slate-800 text-[#1be32b] rounded-sm shadow-md text-xs p-1">[ LATEST_ISSUES: 23 ]</p>
                 </div>
             </section>
-            
+
             {loading && <div className="h-96 w-full flex items-center justify-center"><SpinnerElement /></div>}
             {!loading && <section className="flex items-center gap-6 flex-wrap overflow-hidden">
                 {
-                    issues.slice(0, 4)?.map((issue) => <IssueCard path={issue.repository_url} title={issue.title} avatar={issue.user.avatar_url} author={issue.user.login} created={issue.created_at} />)
+                    issues.slice(0, 4)?.map((issue) => <IssueCard path={issue.html_url} title={issue.title} avatar={issue.user.avatar_url} author={issue.user.login} created={issue.created_at} />)
                 }
             </section>}
         </main>

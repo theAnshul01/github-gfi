@@ -11,12 +11,22 @@ import Footer from "../components/Footer"
 const IssuesPage = () => {
 
     const [searchParams] = useSearchParams()
+    const [search, setSearch] = useState<string>("")
+    const [debouncedSearch, setDebouncedSearch] = useState<string>("")
 
     const page = Number(searchParams.get("page")) || 1
     const perPage = Number(searchParams.get("per_page")) || 20
     const language = searchParams.get("language")
     const label = searchParams.get("label")
     const [loading, setLoading] = useState<boolean>(false)
+
+    useEffect(()=>{
+        const timer = setTimeout(()=>{
+            setDebouncedSearch(search)
+        }, 1000)
+
+        return () => clearTimeout(timer)
+    }, [search])
 
     let query = "state:open"
 
@@ -28,6 +38,9 @@ const IssuesPage = () => {
 
     if (language) {
         query += `+language:${language}`
+    }
+    if(debouncedSearch){
+        query += `+${debouncedSearch}`
     }
 
     const [totalPage, setTotalPage] = useState<number>(0)
@@ -54,7 +67,7 @@ const IssuesPage = () => {
             }
         }
         fetchIssues()
-    }, [page, perPage, language, label])
+    }, [page, perPage, language, label, debouncedSearch])
 
     return (
         <div className="bg-slate-950 py-2">
@@ -65,7 +78,7 @@ const IssuesPage = () => {
                     <div className="flex items-center bg-slate-800 text-green-500 gap-2">
                         <p className="px-2 border-r border-slate-500">&gt;</p>
                         <label htmlFor="search" className="flex-1">
-                            <input disabled type="text" placeholder=" FILTER_BY_METADATA..." className="opacity-50 cursor-not-allowed w-full py-2 px-2 my-2 placeholder-slate-500 bg-slate-800 focus:outline-none focus:ring-1 focus:ring-green-500" />
+                            <input type="text" value={search} onChange={(e)=>setSearch(e.target.value)} placeholder=" FILTER_BY_METADATA..." className="w-full py-2 px-2 my-2 placeholder-slate-500 bg-slate-800 focus:outline-none focus:ring-1 focus:ring-green-500" />
                         </label>
                     </div>
                 </section>
