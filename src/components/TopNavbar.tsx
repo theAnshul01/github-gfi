@@ -1,4 +1,3 @@
-import { LuSearchCode } from "react-icons/lu";
 import { NavLink } from "react-router-dom";
 
 const TopNavbar = () => {
@@ -17,7 +16,7 @@ const TopNavbar = () => {
 
             {/* // TODO:  navlink destination to be updated  */}
 
-            <NavLink to="bookmark" className={({ isActive }) => `hover:underline-offset-4 hover:underline ${isActive ? "text-green-500" : "text-gray-600"}`}>Bookmarks</NavLink>
+            <NavLink to="bookmark" className={({ isActive }) => `hover:underline-offset-4 hover:underline pointer-events-none opacity-50 cursor-not-allowed ${isActive ? "text-green-500" : "text-gray-600"}`}>Bookmarks</NavLink>
           </div>
 
           <div className="flex items-end justify-between gap-3 text-[#14e00d]">
@@ -32,8 +31,8 @@ const TopNavbar = () => {
                 className="placeholder-green-800 border border-gray-700 bg-slate-900 rounded-sm px-2 focus:outline-none focus:ring-1 focus:ring-green-500 text-sm"
               />
             </div> */}
-            <p>[Session ID]</p>
-            <p>User Profile</p>
+            <p className="hidden">[Session ID]</p>
+            <p className="hidden">User Profile</p>
           </div>
         </div>
       </div>

@@ -11,10 +11,14 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import ErrorBoundary from "./components/ErrorBoundary.tsx"
 import TopNavbar from './components/TopNavbar.tsx';
 import IssuesPage from './pages/IssuesPage.tsx';
+import "@radix-ui/themes/styles.css";
+import { Theme } from "@radix-ui/themes";
+
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
+    <Theme>
       <ErrorBoundary>
         <TopNavbar/>
         <Routes>
@@ -22,6 +26,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/issues" element={<IssuesPage/>}/>
         </Routes>
       </ErrorBoundary>
+      </Theme>
     </BrowserRouter>
   </StrictMode>,
 )

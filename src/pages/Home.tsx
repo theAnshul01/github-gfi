@@ -1,26 +1,31 @@
 import { useEffect, useState } from "react"
 import IssueCard from "../components/IssueCard"
-import type { GithubIssue, GithubSearchResponse } from "../types/github"
+import type { GithubIssue } from "../types/github"
+import SpinnerElement from "../components/SpinnerElement"
 
 const Home = () => {
 
     const[issues, setIssues] = useState<GithubIssue[]>([])
     const [total, setTotal] = useState<number>(0)
+    const [loading, setLoading] = useState<boolean>(false)
     const url = "https://api.github.com/search/issues?q=good+first+issue+state:open"
     
     useEffect(()=>{
         async function fetchIssues() {
             try {
+                setLoading(true)
                 const response = await fetch(url)
                 if (!response.ok) {
                     throw new Error("An error occurred")
                 }
                 const data = await response.json()
-                console.log(data)
+                // console.log(data)
                 setIssues(data.items)
                 setTotal(data.total_count)
             } catch (error) {
                 console.error(error)
+            }finally{
+                setLoading(false)
             }
         }
         fetchIssues()
@@ -38,11 +43,13 @@ const Home = () => {
                     <p className="bg-slate-800 text-[#1be32b] rounded-sm shadow-md text-xs p-1">[ LATEST_ISSUES: 23 ]</p>
                 </div>
             </section>
-            <section className="flex items-center gap-6 flex-wrap overflow-hidden">
+            
+            {loading && <div className="h-96 w-full flex items-center justify-center"><SpinnerElement /></div>}
+            {!loading && <section className="flex items-center gap-6 flex-wrap overflow-hidden">
                 {
                     issues.slice(0, 4)?.map((issue) => <IssueCard path={issue.repository_url} title={issue.title} avatar={issue.user.avatar_url} author={issue.user.login} created={issue.created_at} />)
                 }
-            </section>
+            </section>}
         </main>
     )
 }
