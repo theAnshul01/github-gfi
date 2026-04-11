@@ -43,7 +43,6 @@ const Home = () => {
                     <p className="bg-slate-800 text-[#1be32b] rounded-sm shadow-md text-xs p-1">[ LATEST_ISSUES: 23 ]</p>
                 </div>
             </section>
-
             {loading && <div className="h-96 w-full flex items-center justify-center"><SpinnerElement /></div>}
             {!loading && <section className="flex items-center gap-6 flex-wrap overflow-hidden">
                 {
