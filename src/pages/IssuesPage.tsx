@@ -33,7 +33,7 @@ const IssuesPage = () => {
     if(label){
         query += `+label:${label}`
     }else{
-        query += `+label:good-first-issue`
+        query += `+good-first-issue`
     }
 
     if (language) {
@@ -45,7 +45,7 @@ const IssuesPage = () => {
 
     const [totalPage, setTotalPage] = useState<number>(0)
 
-    const url = `https://api.github.com/search/issues?q=${query}&sort=created&page=${page}&per_page=${perPage}`
+    const url = `https://api.github.com/search/issues?q=${query}&sort=created&order=desc&page=${page}&per_page=${perPage}`
     const [issues, setIssues] = useState<GithubIssue[]>([])
 
     useEffect(() => {
