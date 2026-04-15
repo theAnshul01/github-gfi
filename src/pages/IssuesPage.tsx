@@ -6,6 +6,8 @@ import IssuePagePagination from "../components/IssuePagePagination"
 import { useSearchParams } from "react-router-dom"
 import SpinnerElement from "../components/SpinnerElement"
 import Footer from "../components/Footer"
+import { IoBookmarkOutline, IoBookmark } from "react-icons/io5";
+import { addBookmark } from "../lib/bookmarks"
 
 
 const IssuesPage = () => {
@@ -20,8 +22,10 @@ const IssuesPage = () => {
     const label = searchParams.get("label")
     const [loading, setLoading] = useState<boolean>(false)
 
-    useEffect(()=>{
-        const timer = setTimeout(()=>{
+    
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
             setDebouncedSearch(search)
         }, 1000)
 
@@ -30,16 +34,16 @@ const IssuesPage = () => {
 
     let query = "state:open"
 
-    if(label){
+    if (label) {
         query += `+label:${label}`
-    }else{
+    } else {
         query += `+good-first-issue`
     }
 
     if (language) {
         query += `+language:${language}`
     }
-    if(debouncedSearch){
+    if (debouncedSearch) {
         query += `+${debouncedSearch}`
     }
 
@@ -49,16 +53,16 @@ const IssuesPage = () => {
     const [issues, setIssues] = useState<GithubIssue[]>([])
 
     useEffect(() => {
-        async function fetchIssues(){
+        async function fetchIssues() {
             try {
                 setLoading(true)
                 const response = await fetch(url)
-                if(!response.ok){
+                if (!response.ok) {
                     throw new Error("An error occurred while fetching issues")
                 }
                 const data = await response.json()
                 setIssues(data.items)
-                setTotalPage(Math.min(Math.ceil(data.total_count / perPage),50))
+                setTotalPage(Math.min(Math.ceil(data.total_count / perPage), 50))
 
             } catch (error) {
                 console.error(error)
@@ -78,7 +82,7 @@ const IssuesPage = () => {
                     <div className="flex items-center bg-slate-800 text-green-500 gap-2">
                         <p className="px-2 border-r border-slate-500">&gt;</p>
                         <label htmlFor="search" className="flex-1">
-                            <input type="text" value={search} onChange={(e)=>setSearch(e.target.value)} placeholder=" FILTER_BY_METADATA..." className="w-full py-2 px-2 my-2 placeholder-slate-500 bg-slate-800 focus:outline-none focus:ring-1 focus:ring-green-500" />
+                            <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder=" FILTER_BY_METADATA..." className="w-full py-2 px-2 my-2 placeholder-slate-500 bg-slate-800 focus:outline-none focus:ring-1 focus:ring-green-500" />
                         </label>
                     </div>
                 </section>
@@ -91,29 +95,31 @@ const IssuesPage = () => {
                             <th className="px-4 py-3">Issue</th>
                             <th className="px-4 py-3">Author</th>
                             <th className="px-4 py-3">created</th>
+                            <th className="px-4 py-3">bookmark</th>
                             <th className="px-4 py-3">Visit</th>
                         </tr>
                     </thead>
 
                     {loading && <div className="h-96 ml-64 w-full flex items-center justify-center"><SpinnerElement /></div>}
                     {!loading && <tbody>
-                       {issues.map((issue) => (
-                        <tr key={issue.id} className="hover:bg-gray-900">
-                            <td className="px-4 py-3 text-right text-[#15e030]">#{String(issue.id).slice(-5)}</td>
-                            <td className="px-4 py-3 text-left">{issue.title}</td>
-                            <td className="flex items-center justify-start px-4 py-3 text-center gap-2 whitespace-nowrap truncate overflow-hidden"><img src={issue.user.avatar_url} alt="user_avatar" className="h-6 w-6 rounded-full" /> {issue.user.login}</td>
-                            <td className="px-4 py-3 text-center whitespace-nowrap">{formatDistanceToNow(issue.created_at, {addSuffix: true})}</td>
-                               <td className="text-2xl text-center hover:text-[#11d11b]"><a href={issue.html_url} target="_blank"> &rarr;</a></td>
-                        </tr>
-                       ))}
-                    </tbody> }
+                        {issues.map((issue) => (
+                            <tr key={issue.id} className="hover:bg-gray-900">
+                                <td className="px-4 py-3 text-right text-[#15e030]">#{String(issue.id).slice(-5)}</td>
+                                <td className="px-4 py-3 text-left">{issue.title}</td>
+                                <td className="flex items-center justify-start px-4 py-3 text-center gap-2 whitespace-nowrap truncate overflow-hidden"><img src={issue.user.avatar_url} alt="user_avatar" className="h-6 w-6 rounded-full" /> {issue.user.login}</td>
+                                <td className="px-4 py-3 text-center whitespace-nowrap">{formatDistanceToNow(issue.created_at, { addSuffix: true })}</td>
+                                <td className="text-center text-xl hover:text-[#11d11b]"> <button onClick={()=>addBookmark(issue)}> <IoBookmarkOutline /> </button>  </td>
+                                <td className="text-2xl text-center hover:text-[#11d11b]"><a href={issue.html_url} target="_blank"> &rarr;</a></td>
+                            </tr>
+                        ))}
+                    </tbody>}
                 </table>
 
-                
+
             </main>
             <section className="ml-64 bg-slate-950 mb-4">
-                <IssuePagePagination 
-                    page = {page}
+                <IssuePagePagination
+                    page={page}
                     totalPage={totalPage}
                     perPage={perPage}
                 />
