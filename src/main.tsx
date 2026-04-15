@@ -13,6 +13,8 @@ import TopNavbar from './components/TopNavbar.tsx';
 import IssuesPage from './pages/IssuesPage.tsx';
 import "@radix-ui/themes/styles.css";
 import { Theme } from "@radix-ui/themes";
+import Bookmarks from './pages/Bookmarks.tsx';
+import Login from './pages/Login.tsx';
 
 
 createRoot(document.getElementById('root')!).render(
@@ -24,6 +26,8 @@ createRoot(document.getElementById('root')!).render(
         <Routes>
           <Route path="/*" element={<App />} />
           <Route path="/issues" element={<IssuesPage/>}/>
+          <Route path="/bookmark" element={<Bookmarks/>} />
+          <Route path="/login" element={<Login/>} />
         </Routes>
       </ErrorBoundary>
       </Theme>
