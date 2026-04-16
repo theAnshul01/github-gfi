@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../hooks/useAuth"
-import { FaBookmark, FaTrash, FaExternalLinkAlt, FaCode, FaExclamationTriangle } from "react-icons/fa"
-import { MdRadioButtonUnchecked, MdOutlineCheckCircleOutline } from "react-icons/md";
+import { FaBookmark, FaTrash, FaExternalLinkAlt, FaExclamationTriangle } from "react-icons/fa"
 // import { formatDistanceToNow, setSeconds } from "date-fns"
 import SpinnerElement from "../components/SpinnerElement"
-import { getBookmark, removeBookmark, toggleCompleted } from "../lib/bookmarks"
+import { getBookmark, removeBookmark } from "../lib/bookmarks"
 import type { GithubIssue } from "../types/github";
 
 
