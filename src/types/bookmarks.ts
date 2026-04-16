@@ -2,8 +2,9 @@ export interface Bookmark {
     id?: string;
     user_id: string;
     issue_id: number;
-    repo_name: string;
-    issue_title :string;
-    issue_url : string;
+    issue_url: string;
+    repo: string;
+    title :string;
+    completed: boolean;
     created_at?: string;
 }

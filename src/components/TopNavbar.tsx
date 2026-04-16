@@ -5,7 +5,7 @@ import { supabase } from "../services/SupabaseClient";
 
 const TopNavbar = () => {
   const user = useAuth()
-  console.log("user: ", user)
+  // console.log("user: ", user)
   const navigate = useNavigate()
 
   const logout = async () => {
