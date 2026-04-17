@@ -24,7 +24,8 @@ const IssuesPage = () => {
     const label = searchParams.get("label")
     const [loading, setLoading] = useState<boolean>(false)
     const [bookmarkedIssues, setBookmarkedIssues] = useState<Set<number>>(new Set())
-    const [showError, setShowError] = useState<boolean>(false);
+    const [showError, setShowError] = useState<boolean>(false)
+    const [emptySearch, setEmptySearch] = useState<boolean>(false)
     const user = useAuth()
 
     useEffect(() => {
@@ -57,6 +58,7 @@ const IssuesPage = () => {
 
     useEffect(() => {
         async function fetchIssues() {
+            setEmptySearch(false)
             try {
                 setLoading(true)
                 const response = await fetch(url)
@@ -64,6 +66,10 @@ const IssuesPage = () => {
                     throw new Error("An error occurred while fetching issues")
                 }
                 const data = await response.json()
+                if(data.items.length === 0){
+                    setEmptySearch(true)
+                    console.log(emptySearch)
+                }
                 setIssues(data.items)
                 setTotalPage(Math.min(Math.ceil(data.total_count / perPage), 50))
 
@@ -150,8 +156,24 @@ const IssuesPage = () => {
                     </div>
                 </section>
 
-                {/* table */}
-                <table className="w-full text-sm text-slate-400 mt-4">
+                {emptySearch && (
+                    <div className="flex flex-col items-center justify-center py-20 font-mono">
+                        <div className="border border-green-500/30 bg-green-500/5 p-8 rounded-lg max-w-md">
+                            <div className="text-green-500 text-6xl mb-4 text-center">∅</div>
+                            <p className="text-gray-300 text-lg mb-2">
+                                <span className="text-green-500">[</span> No issues found <span className="text-green-500">]</span>
+                            </p>
+                            <p className="text-gray-500 text-sm">
+                                {search ? (
+                                    <>No results for query: <span className="text-yellow-500">"{search}"</span></>
+                                ) : (
+                                    <>Try selecting a different programming language or adjust your filters.</>
+                                )}
+                            </p>
+                        </div>
+                    </div>
+                )}
+                {!emptySearch && <table className="w-full text-sm text-slate-400 mt-4">
                     <thead className="bg-slate-800 border-b border-1 border-slate-400 sticky top-[64px]">
                         <tr>
                             <th className="px-4 py-3">Id</th>
@@ -164,7 +186,8 @@ const IssuesPage = () => {
                     </thead>
 
                     {loading && <div className="h-96 ml-64 w-full flex items-center justify-center"><SpinnerElement /></div>}
-                    {!loading && <tbody>
+                    
+                    {!loading &&  <tbody>
                         {issues.map((issue) => (
                             <tr key={issue.id} className="hover:bg-gray-900">
                                 <td className="px-4 py-3 text-right text-[#15e030]">#{String(issue.id).slice(-5)}</td>
@@ -180,7 +203,7 @@ const IssuesPage = () => {
                             </tr>
                         ))}
                     </tbody>}
-                </table>
+                </table>}
 
 
             </main>
