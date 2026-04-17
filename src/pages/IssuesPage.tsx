@@ -8,6 +8,8 @@ import SpinnerElement from "../components/SpinnerElement"
 import Footer from "../components/Footer"
 import { IoBookmarkOutline, IoBookmark } from "react-icons/io5";
 import { addBookmark, getBookmark, removeBookmark } from "../lib/bookmarks"
+import { useAuth } from "../hooks/useAuth"
+import ErrorMessage from "../components/ErrorMessage"
 
 
 const IssuesPage = () => {
@@ -22,6 +24,8 @@ const IssuesPage = () => {
     const label = searchParams.get("label")
     const [loading, setLoading] = useState<boolean>(false)
     const [bookmarkedIssues, setBookmarkedIssues] = useState<Set<number>>(new Set())
+    const [showError, setShowError] = useState<boolean>(false);
+    const user = useAuth()
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -89,6 +93,11 @@ const IssuesPage = () => {
     }, [])
 
     async function handleBookmark(issue: GithubIssue) {
+        if(!user){
+            setShowError(true)
+            return;
+        }
+
         const issueId = issue.id
         const isBookmarked = bookmarkedIssues.has(issueId)
 
@@ -128,6 +137,7 @@ const IssuesPage = () => {
 
     return (
         <div className="bg-slate-950 py-2">
+            {showError && <ErrorMessage message="Login needed for bookmarking the issue!" setShowError={setShowError}/>}
             <Sidebar />
             <main className="ml-64 bg-slate-950 min-h-lvh px-6 py-8 font-mono">
                 <section>
@@ -159,7 +169,7 @@ const IssuesPage = () => {
                             <tr key={issue.id} className="hover:bg-gray-900">
                                 <td className="px-4 py-3 text-right text-[#15e030]">#{String(issue.id).slice(-5)}</td>
                                 <td className="px-4 py-3 text-left">{issue.title}</td>
-                                <td className="flex items-center justify-start px-4 py-3 text-center gap-2 whitespace-nowrap truncate overflow-hidden"><img src={issue.user.avatar_url} alt="user_avatar" className="h-6 w-6 rounded-full" /> {issue.user.login} - {issue.id}</td>
+                                <td className="flex items-center justify-start px-4 py-3 text-center gap-2 whitespace-nowrap truncate overflow-hidden"><img src={issue.user.avatar_url} alt="user_avatar" className="h-6 w-6 rounded-full" /> {issue.user.login}</td>
                                 <td className="px-4 py-3 text-center whitespace-nowrap">{formatDistanceToNow(issue.created_at, { addSuffix: true })}</td>
                                 <td className="text-center text-xl hover:text-[#11d11b]"> <button onClick={() => handleBookmark(issue)}> {
                                     bookmarkedIssues.has(issue.id)

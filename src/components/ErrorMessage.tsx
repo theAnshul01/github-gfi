@@ -1,30 +1,19 @@
 interface ErrorMessageProps {
-    type: "RATE_LIMIT" | "API_ERROR" | "NETWORK_ERROR"
+    message: string,
+    setShowError: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 
-const ErrorMessage = ({type} : ErrorMessageProps) => {
-    let message = ""
+const ErrorMessage = ({ message, setShowError }: ErrorMessageProps) => {
 
-    if(type === "RATE_LIMIT"){
-        message = "Github API rate limit exceeded. Please wait for sometime. Alternatively you can use a Personal Access Token."
-    }
-
-    if(type === "NETWORK_ERROR"){
-        message = "Network error. Please check your connection and try again."
-    }
-
-    if(type === "API_ERROR"){
-        message = "Something went wrong while fetching issues."
-    }
-
-  return (
-    <div className="min-h-screen flex justify-center items-center text-center py-10 dark:bg-gray-800">
-        <div>
-            <p className="text-red-500 dark:text-red-400 text-lg font-medium">{message}</p>
-        </div>
-    </div>
-  )
+    return (
+        <>
+            <div className="font-mono border border-red-500/50 rounded mt-1 bg-red-950/90 flex items-center justify-between fixed top-16 z-50 w-full px-6 py-4">
+                <p className="text-red-500">[ERROR] -  <span className="text-gray-300">{message}</span></p>
+                <button onClick={()=>setShowError(false)} className="text-[#14e00d] hover:text-[#10b80a] transition-colors font-bold"> [X] </button>
+            </div>
+        </>
+    )
 }
 
 export default ErrorMessage
