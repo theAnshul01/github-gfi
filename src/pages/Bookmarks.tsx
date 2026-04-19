@@ -11,7 +11,8 @@ import type { GithubIssue } from "../types/github";
 const Bookmarks = () => {
   const user = useAuth()
   const navigate = useNavigate()
-  const [issues, setIssues] = useState<GithubIssue[]>([]) // TODO: fix the type
+  const [issues, setIssues] = useState<GithubIssue[]>([])
+  const [redirectCountdown, setRedirectCountdown] = useState(5)
 
   useEffect(() => {
     async function fetchBookmarks() {
@@ -27,11 +28,20 @@ const Bookmarks = () => {
       const timer = setTimeout(() => {
         navigate("/")
       }, 5000)
-      return () => clearTimeout(timer)
+      const countdown = setInterval(() => {
+        setRedirectCountdown(prev => {
+          if (prev <= 1) {
+            clearInterval(countdown)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+      return () => {
+        clearTimeout(timer)
+        clearInterval(countdown)
+      }
     }
-
-
-
   }, [user, navigate])
 
   async function deleteBookmark(issueId: number) {
@@ -59,7 +69,7 @@ const Bookmarks = () => {
           <p className="text-red-500 text-sm mb-2">$ error: ACCESS_DENIED</p>
           <h2 className="text-2xl text-[#efecec] mb-4">[ UNAUTHORIZED ]</h2>
           <p className="text-[#6d6b6b] mb-4">// You need to login to access bookmarks</p>
-          <p className="text-[#6d6b6b] text-sm">// Redirecting to homepage in 5 seconds...</p>
+          <p className="text-[#6d6b6b] text-sm">// Redirecting to homepage in {redirectCountdown} seconds...</p>
           <button
             onClick={() => navigate("/")}
             className="mt-6 bg-slate-800 hover:bg-slate-700 text-[#efecec] px-4 py-2 rounded-sm transition-colors border border-slate-600"

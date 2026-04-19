@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Clock from "./Clock"
-import { FaGithub } from "react-icons/fa";
+import { FaGithub, FaDiscord } from "react-icons/fa";
 
 const Footer = () => {
 
@@ -26,7 +26,8 @@ const Footer = () => {
                     <p>POS: LN {randomLn}, COL {randomCol}</p>
                 </div>
                 <div className='flex items-center justify-between gap-4'>
-                    <div className="flex items-center justify-between gap-1"><FaGithub /> <a href="https://github.com/theAnshul01/github-gfi" target="_blank">GITHUB</a></div>
+                    <div className="flex items-center justify-between gap-1"><FaGithub /> <a href="https://github.com/theAnshul01/github-gfi" target="_blank" rel="noopener noreferrer">GITHUB</a></div>
+                    <div className="flex items-center justify-between gap-1"><FaDiscord /> <a href="https://discord.gg/NeW2RnzS" target="_blank" rel="noopener noreferrer">DISCORD</a></div>
                     <p className="hidden">X.COMMUNICATION</p>
                     <p>[<Clock/>]</p>
                 </div>
