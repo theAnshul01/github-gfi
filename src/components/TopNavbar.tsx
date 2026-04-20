@@ -1,6 +1,17 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { FiLogIn, FiLogOut } from "react-icons/fi";
+import { useAuth } from "../hooks/useAuth";
+import { supabase } from "../services/SupabaseClient";
 
 const TopNavbar = () => {
+  const user = useAuth()
+  // console.log("user: ", user)
+  const navigate = useNavigate()
+
+  const logout = async () => {
+    await supabase.auth.signOut()
+    navigate("/")
+  }
 
   return (
     <nav className="sticky top-0 z-30 border-b border-gray-500">
@@ -10,29 +21,33 @@ const TopNavbar = () => {
             [GOOD_FIRST_ISSUES]
           </h1>
 
+
           <div className="flex items-center justify-between gap-2 sm:gap-4 text-xs sm:text-sm cursor-pointer">
             <NavLink to="/" className={({isActive}) => `hover:underline-offset-4 hover:underline ${isActive ? "text-green-500" : "text-gray-600"}`}>Home</NavLink>
             <NavLink to="/issues" className={({isActive}) => `hover:underline-offset-4 hover:underline ${isActive ? "text-green-500" : "text-gray-600"}`}>Issues</NavLink>
 
             {/* // TODO:  navlink destination to be updated  */}
 
-            <NavLink to="bookmark" className={({ isActive }) => `hover:underline-offset-4 hover:underline pointer-events-none opacity-50 cursor-not-allowed ${isActive ? "text-green-500" : "text-gray-600"}`}>Bookmarks</NavLink>
+
+            <NavLink to="/bookmark" className={({ isActive }) => `hover:underline-offset-4 hover:underline ${isActive ? "text-green-500" : "text-gray-600"}`}>Bookmarks</NavLink>
           </div>
 
           <div className="flex items-end justify-between gap-3 text-[#14e00d]">
-            {/* <div className="flex items-center justify-between">
-              <label htmlFor="repo-search">
-                <LuSearchCode className="border text-green-600 border-gray-700 text-2xl rounded-sm cursor-pointer"/>
-              </label>
-              <input
-                id="repo-search"
-                type="text"
-                placeholder="$ grep issues --label='good-first-issues'"
-                className="placeholder-green-800 border border-gray-700 bg-slate-900 rounded-sm px-2 focus:outline-none focus:ring-1 focus:ring-green-500 text-sm"
-              />
-            </div> */}
-            <p className="hidden">[Session ID]</p>
-            <p className="hidden">User Profile</p>
+            {user ? (
+              <div className="flex items-center gap-2">
+                <img src={user.user_metadata.avatar_url} className="h-8 w-8 rounded-full"></img>
+                <button onClick={logout} className="flex items-center gap-2 hover:text-red-500 transition-colors">
+
+                  <FiLogOut className="text-lg" />
+                  <span className="text-sm">[LOGOUT]</span>
+                </button>
+              </div>
+            ) : (
+              <NavLink to="/login" className={({ isActive }) => `flex items-center gap-2 hover:text-green-400 transition-colors cursor-pointer ${isActive ? "text-green-500" : "text-[#14e00d]"}`}>
+                <FiLogIn className="text-lg cursor-pointer" />
+                <span className="text-sm">[LOGIN]</span>
+              </NavLink>
+            )}
           </div>
         </div>
       </div>

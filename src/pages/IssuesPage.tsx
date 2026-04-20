@@ -6,6 +6,10 @@ import IssuePagePagination from "../components/IssuePagePagination"
 import { useSearchParams } from "react-router-dom"
 import SpinnerElement from "../components/SpinnerElement"
 import Footer from "../components/Footer"
+import { IoBookmarkOutline, IoBookmark } from "react-icons/io5";
+import { addBookmark, getBookmark, removeBookmark } from "../lib/bookmarks"
+import { useAuth } from "../hooks/useAuth"
+import ErrorMessage from "../components/ErrorMessage"
 
 
 const IssuesPage = () => {
@@ -19,9 +23,13 @@ const IssuesPage = () => {
     const language = searchParams.get("language")
     const label = searchParams.get("label")
     const [loading, setLoading] = useState<boolean>(false)
+    const [bookmarkedIssues, setBookmarkedIssues] = useState<Set<number>>(new Set())
+    const [showError, setShowError] = useState<boolean>(false)
+    const [emptySearch, setEmptySearch] = useState<boolean>(false)
+    const user = useAuth()
 
-    useEffect(()=>{
-        const timer = setTimeout(()=>{
+    useEffect(() => {
+        const timer = setTimeout(() => {
             setDebouncedSearch(search)
         }, 1000)
 
@@ -32,6 +40,7 @@ const IssuesPage = () => {
     const [issues, setIssues] = useState<GithubIssue[]>([])
 
     useEffect(() => {
+
         let query = "state:open";
         if (label) {
             query += `+label:${label}`;
@@ -57,6 +66,8 @@ const IssuesPage = () => {
                 const data = await response.json();
                 setIssues(data.items);
                 setTotalPage(Math.min(Math.ceil(data.total_count / perPage), 50));
+
+
             } catch (error) {
                 console.error(error);
             } finally {
@@ -66,8 +77,68 @@ const IssuesPage = () => {
         fetchIssues();
     }, [page, perPage, language, label, debouncedSearch]);
 
+    useEffect(() => {
+        async function loadBookmarks() {
+            const data = await getBookmark()
+            
+            if (data) {
+                const ids = new Set<number>(
+                    data.map(b => Number(b.issue_id))
+                )
+
+                setBookmarkedIssues(ids)
+            }
+        }
+
+        loadBookmarks()
+    }, [])
+
+    async function handleBookmark(issue: GithubIssue) {
+        if(!user){
+            setShowError(true)
+            return;
+        }
+
+        const issueId = issue.id
+        const isBookmarked = bookmarkedIssues.has(issueId)
+
+        setBookmarkedIssues(prev => {
+            const newSet = new Set(prev)
+            if (isBookmarked) {
+                newSet.delete(issueId)
+            } else {
+                newSet.add(issueId)
+            }
+
+            return newSet
+        })
+
+        try {
+            if (!isBookmarked) {
+                await addBookmark(issue)
+            } else {
+                await removeBookmark(issue.id)
+            }
+        } catch (error) {
+            console.error("Bookmark failed: ", error)
+
+            // UI Rollback
+            setBookmarkedIssues(prev => {
+                const newSet = new Set(prev)
+
+                if (isBookmarked) {
+                    newSet.add(issueId)
+                } else {
+                    newSet.delete(issueId)
+                }
+                return newSet
+            })
+        }
+    }
+
     return (
         <div className="bg-slate-950 py-2">
+            {showError && <ErrorMessage message="Login needed for bookmarking the issue!" setShowError={setShowError}/>}
             <Sidebar />
             <main className="ml-0 md:ml-64 bg-slate-950 min-h-lvh px-3 sm:px-6 pt-16 md:pt-6 py-6 sm:py-8 pb-10 font-mono">
                 <section>
@@ -80,39 +151,89 @@ const IssuesPage = () => {
                     </div>
                 </section>
 
-                {/* table */}
-                <div className="overflow-x-auto">
-                  <table className="w-full text-xs sm:text-sm text-slate-400 mt-4">
-                    <thead className="bg-slate-800 border-b border-1 border-slate-400 sticky top-[64px]">
-                        <tr>
-                            <th className="px-2 sm:px-4 py-2 sm:py-3 text-left">Id</th>
-                            <th className="px-2 sm:px-4 py-2 sm:py-3 text-left">Issue</th>
-                            <th className="px-2 sm:px-4 py-2 sm:py-3 hidden sm:table-cell text-left">Author</th>
-                            <th className="px-2 sm:px-4 py-2 sm:py-3 hidden md:table-cell text-left">created</th>
-                            <th className="px-2 sm:px-4 py-2 sm:py-3 text-center">Visit</th>
-                        </tr>
-                    </thead>
+{/* Empty Search State from Main */}
+                {emptySearch && (
+                    <div className="flex flex-col items-center justify-center py-20 font-mono">
+                        <div className="border border-green-500/30 bg-green-500/5 p-8 rounded-lg max-w-md">
+                            <div className="text-green-500 text-6xl mb-4 text-center">∅</div>
+                            <p className="text-gray-300 text-lg mb-2">
+                                <span className="text-green-500">[</span> No issues found <span className="text-green-500">]</span>
+                            </p>
+                            <p className="text-gray-500 text-sm">
+                                {search ? (
+                                    <>No results for query: <span className="text-yellow-500">"{search}"</span></>
+                                ) : (
+                                    <>Try selecting a different programming language or adjust your filters.</>
+                                )}
+                            </p>
+                        </div>
+                    </div>
+                )}
 
-                    {loading && <div className="h-96 w-full flex items-center justify-center"><SpinnerElement /></div>}
-                    {!loading && <tbody>
-                       {issues.map((issue) => (
-                        <tr key={issue.id} className="hover:bg-gray-900">
-                            <td className="px-2 sm:px-4 py-2 sm:py-3 text-right text-[#15e030]" title={`#${issue.id}`}>#{String(issue.id).slice(-5)}</td>
-                            <td className="px-2 sm:px-4 py-2 sm:py-3 text-left truncate max-w-xs sm:max-w-md">{issue.title}</td>
-                            <td className="hidden sm:table-cell px-2 sm:px-4 py-2 sm:py-3 text-left"><div className="flex items-center gap-2 whitespace-nowrap"><img src={issue.user.avatar_url} alt="user_avatar" className="h-5 w-5 sm:h-6 sm:w-6 rounded-full flex-shrink-0" /> <span className="truncate">{issue.user.login}</span></div></td>
-                            <td className="hidden md:table-cell px-2 sm:px-4 py-2 sm:py-3 text-left whitespace-nowrap">{formatDistanceToNow(issue.created_at, {addSuffix: true})}</td>
-                            <td className="text-lg sm:text-2xl text-center hover:text-[#11d11b] px-2 sm:px-4 py-2 sm:py-3"><a href={issue.html_url} target="_blank"> &rarr;</a></td>
-                        </tr>
-                       ))}
-                    </tbody> }
-                  </table>
-                </div>
+                {/* Responsive Table Wrapper from your branch */}
+                {!emptySearch && (
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-xs sm:text-sm text-slate-400 mt-4">
+                            <thead className="bg-slate-800 border-b border-1 border-slate-400 sticky top-[64px]">
+                                <tr>
+                                    <th className="px-2 sm:px-4 py-2 sm:py-3 text-left">Id</th>
+                                    <th className="px-2 sm:px-4 py-2 sm:py-3 text-left">Issue</th>
+                                    <th className="px-2 sm:px-4 py-2 sm:py-3 hidden sm:table-cell text-left">Author</th>
+                                    <th className="px-2 sm:px-4 py-2 sm:py-3 hidden md:table-cell text-left">Created</th>
+                                    {/* Keep Bookmark column from Main */}
+                                    <th className="px-2 sm:px-4 py-2 sm:py-3 text-center">Bookmark</th>
+                                    <th className="px-2 sm:px-4 py-2 sm:py-3 text-center">Visit</th>
+                                </tr>
+                            </thead>
 
-                
+                            {loading && (
+                                <div className="h-96 w-full flex items-center justify-center">
+                                    <SpinnerElement />
+                                </div>
+                            )}
+
+                            {!loading && (
+                                <tbody>
+                                    {issues.map((issue) => (
+                                        <tr key={issue.id} className="hover:bg-gray-900">
+                                            <td className="px-2 sm:px-4 py-2 sm:py-3 text-right text-[#15e030]" title={`#${issue.id}`}>
+                                                #{String(issue.id).slice(-5)}
+                                            </td>
+                                            <td className="px-2 sm:px-4 py-2 sm:py-3 text-left truncate max-w-[150px] xs:max-w-xs sm:max-w-md">
+                                                {issue.title}
+                                            </td>
+                                            <td className="hidden sm:table-cell px-2 sm:px-4 py-2 sm:py-3 text-left">
+                                                <div className="flex items-center gap-2 whitespace-nowrap">
+                                                    <img src={issue.user.avatar_url} alt="user_avatar" className="h-5 w-5 sm:h-6 sm:w-6 rounded-full flex-shrink-0" />
+                                                    <span className="truncate">{issue.user.login}</span>
+                                                </div>
+                                            </td>
+                                            <td className="hidden md:table-cell px-2 sm:px-4 py-2 sm:py-3 text-left whitespace-nowrap">
+                                                {formatDistanceToNow(issue.created_at, { addSuffix: true })}
+                                            </td>
+                                            {/* Merged Bookmark Button logic */}
+                                            <td className="text-lg sm:text-xl text-center hover:text-[#11d11b] px-2 sm:px-4 py-2 sm:py-3">
+                                                <button onClick={() => handleBookmark(issue)}>
+                                                    {bookmarkedIssues.has(issue.id) ? <IoBookmark /> : <IoBookmarkOutline />}
+                                                </button>
+                                            </td>
+                                            <td className="text-lg sm:text-2xl text-center hover:text-[#11d11b] px-2 sm:px-4 py-2 sm:py-3">
+                                                <a href={issue.html_url} target="_blank" rel="noreferrer"> &rarr;</a>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            )}
+                        </table>
+                    </div>
+                )}
+
             </main>
+
             <section className="ml-0 md:ml-64 bg-slate-950 mb-8 px-3 sm:px-6">
                 <IssuePagePagination 
                     page = {page}
+
                     totalPage={totalPage}
                     perPage={perPage}
                 />

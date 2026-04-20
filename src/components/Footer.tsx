@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Clock from "./Clock"
-import { FaGithub } from "react-icons/fa";
+import { FaGithub, FaDiscord } from "react-icons/fa";
 
 const STATUS_OPTIONS = ["PULLING", "PUSHING", "CLONING", "FETCHING", "MERGING", "FORKING"];
 
@@ -31,6 +31,15 @@ const Footer = () => {
                            rel="noreferrer">
                             GITHUB
                         </a>
+                      <FaDiscord className="group-hover:scale-110 transition-transform" /> 
+                        <a href="https://discord.gg/NeW2RnzS" 
+                           target="_blank" 
+                           className="hover:underline underline-offset-2 font-bold decoration-black/30"
+                           rel="noopener noreferrer">
+                            DISCORD
+                        </a>
+                        <p className="hidden">X.COMMUNICATION</p>
+                    <p>[<Clock/>]</p>
                     </div>
                     <p className="font-bold hidden xs:block">[<Clock/>]</p>
                 </div>

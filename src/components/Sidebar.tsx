@@ -1,7 +1,7 @@
 import { MdTerminal, MdMenu, MdClose} from "react-icons/md";
 import { useState } from "react";
 import { NavLink, useSearchParams } from "react-router-dom";
-import { FaFolder } from "react-icons/fa";
+import { FaFolder, FaExternalLinkAlt } from "react-icons/fa";
 import { SiJavascript, SiTypescript, SiPython, SiGo } from "react-icons/si";
 import { FaJava } from "react-icons/fa6";
 
@@ -14,7 +14,7 @@ const Sidebar = () => {
   const label = searchParams.get("label")
 
   const active = "flex items-center gap-2 text-[#14e00d]"
-  const inactive = "flex items-center gap-2 text-gray-700"
+  const inactive = "flex items-center gap-2 text-gray-700 hover:text-[#14e00d] transition-colors"
 
   const linkClass = (cond :boolean):string => (cond ? active : inactive)
 
@@ -31,13 +31,14 @@ const Sidebar = () => {
         </button>
       </div>
 
-      {open && (
+{open && (
         <div
           className="fixed inset-0 bg-black/50 z-30 md:hidden"
           onClick={() => setOpen(false)}
         />
       )}
-    {/* Sidebar */}
+
+      {/* Sidebar */}
       <aside
         className={`
           fixed top-0 left-0 z-40 h-full w-64 bg-slate-900 text-[#14e00d] p-4 font-mono border-r border-gray-500
@@ -46,7 +47,7 @@ const Sidebar = () => {
           md:translate-x-0 md:top-16 md:h-[calc(100vh-64px)]
         `}
       >
-       {/* Close button (mobile) */}
+        {/* Close button (mobile) */}
         <div className="flex justify-between items-center md:hidden mb-4">
           <h1 className="flex items-center gap-2">
             <MdTerminal /> MENU
@@ -124,8 +125,21 @@ const Sidebar = () => {
             <SiGo /> /SRC/GO
           </NavLink>
         </div>
+
+        {/* Added the Git learning resources from main branch here */}
+        <div className="absolute bottom-12 left-4 right-4">
+          <p className="text-xs text-green-700 mb-2">// Git learning resources</p>
+          <a
+            href="https://git-buddy-animations.lovable.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-gray-700 hover:text-[#14e00d] transition-colors"
+          >
+            <FaExternalLinkAlt />
+            <span className="text-sm">GIT_BUDDY</span>
+          </a>
+        </div>
       </aside>
-    </>
   )
 }
 

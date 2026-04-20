@@ -32,10 +32,12 @@ By participating in this project, you agree to keep interactions respectful and 
 
 - **React** + **Vite** — frontend framework and build tool
 - **TypeScript** — strict typing throughout
-- **Tailwind CSS** — utility-first styling
+- **Radix UI Themes** + **Tailwind CSS** — UI components and styling
+- **Supabase** — authentication and bookmark storage
+- **React Router** — client-side routing for multiple pages
 - **GitHub REST API** — data source (via `src/services/githubService.ts`)
 
-The goal is to make it easy for developers — especially newcomers to open source — to find beginner-friendly issues across GitHub.
+The goal is to make it easy for developers — especially newcomers to open source — to find beginner-friendly issues across GitHub, bookmark them, and track progress.
 
 ---
 
@@ -61,11 +63,6 @@ Looking for a place to start? Here are well-scoped tasks that are great for firs
 | Task | Description | Skill Level |
 |---|---|---|
 | **Mobile responsiveness** | The Navbar, filters, and cards break on small screens. Use Tailwind's `sm:` / `md:` breakpoints to fix them. | Beginner |
-| **Skeleton loading states** | Replace blank states with animated skeleton placeholders while issues are loading. | Beginner |
-| **Extract `IssueCard` component** | The issue card UI is likely inline in `App.tsx`. Move it into `src/components/IssueCard.tsx`. | Beginner |
-| **Extract `FilterBar` component** | Group the search input and `LanguageSelect` into a dedicated `src/components/FilterBar.tsx`. | Beginner |
-| **Extract `Header` component** | Move the page header/navbar out of `App.tsx` into `src/components/Header.tsx`. | Beginner |
-| **Add a constants file** | Move hardcoded values (language list, items per page, API base URL) into `src/constants.ts`. | Beginner |
 | **Improve error handling UI** | Show a user-friendly error message when the GitHub API fails or rate-limits the request. | Beginner–Intermediate |
 | **Add empty state UI** | Show a helpful message and illustration when no issues match the search/filter. | Beginner |
 
@@ -73,14 +70,11 @@ Looking for a place to start? Here are well-scoped tasks that are great for firs
 
 | Task | Description | Skill Level |
 |---|---|---|
-| **GitHub token input** | Add an optional personal access token input to raise the GitHub API rate limit from 60 to 5000 req/hr. | Intermediate |
 | **Sort options** | Add a sort dropdown (Newest, Most commented, Recently updated). | Intermediate |
 | **Additional filters** | Add filters for labels (e.g. `help wanted`) or minimum repo stars. | Intermediate |
 | **Shareable URL state** | Sync all filters (search, language, page) to URL query params so results are shareable. | Intermediate |
-| **Bookmark/save issues** | Allow users to save issues locally with `localStorage` for later reference. | Intermediate |
 | **Add unit tests** | Set up Vitest + React Testing Library and add tests for `LanguageSelect`, `Pagination`, and `githubService`. | Intermediate |
 | **Add GitHub Actions CI** | Add a workflow that runs `tsc`, `eslint`, and tests on every pull request. | Intermediate |
-| **Error boundary** | Wrap the app in a React `ErrorBoundary` to gracefully catch runtime errors. | Intermediate |
 | **PWA support** | Add a `vite-plugin-pwa` manifest so the app is installable on mobile. | Advanced |
 
 ---
@@ -91,6 +85,7 @@ Looking for a place to start? Here are well-scoped tasks that are great for firs
 
 - **Node.js** v20 or later
 - **npm** (comes with Node)
+- A [Supabase project](https://supabase.com) for local development (optional for basic features)
 - A [GitHub personal access token](https://github.com/settings/tokens) is optional but recommended to avoid hitting API rate limits during development.
 
 ### Steps
@@ -116,7 +111,7 @@ The app will be available at `http://localhost:5173`.
 npm run build
 
 # Lint the codebase
-npx eslint src/
+npm run lint
 ```
 
 ---
@@ -125,28 +120,50 @@ npx eslint src/
 
 ```
 src/
-├── components/
-│   ├── LanguageSelect.tsx   # Language filter dropdown
-│   └── Pagination.tsx       # Page navigation controls
-├── hooks/
-│   ├── useDebounce.ts       # Debounces the search input
-│   └── useTheme.ts          # Light/dark theme toggle logic
-├── services/
-│   └── githubService.ts     # All GitHub API calls live here
-├── types/
-│   ├── filters.ts           # Types for filter state
-│   └── github.ts            # Types for GitHub API responses
-├── App.tsx                  # Main application component
-├── index.css                # Global styles
-└── main.tsx                 # App entry point
+├── components/           # Reusable UI components
+│   ├── EmptyState.tsx
+│   ├── ErrorBoundary.tsx
+│   ├── ErrorMessage.tsx
+│   ├── Footer.tsx
+│   ├── IssueCard.tsx
+│   ├── IssuePagePagination.tsx
+│   ├── LanguageSelect.tsx
+│   ├── Pagination.tsx
+│   ├── Sidebar.tsx
+│   ├── SortSelect.tsx
+│   ├── SpinnerElement.tsx
+│   └── TopNavbar.tsx
+├── hooks/               # Custom hooks
+│   ├── useAuth.ts       # Authentication state management
+│   ├── useDebounce.ts   # Debounces the search input
+│   └── useTheme.ts      # Light/dark theme toggle logic
+├── lib/                 # Utility functions
+│   └── bookmarks.ts    # Bookmark helpers
+├── pages/               # Route pages
+│   ├── Bookmarks.tsx   # User's saved bookmarks
+│   ├── Home.tsx        # Landing/home page
+│   ├── IssuesPage.tsx   # Main issues search page
+│   └── Login.tsx       # Authentication page
+├── services/            # API and external services
+│   ├── bookmarkService.ts  # Bookmark CRUD operations
+│   ├── githubService.ts   # All GitHub API calls
+│   └── SupabaseClient.ts # Supabase client configuration
+├── types/               # TypeScript type definitions
+│   ├── bookmarks.ts
+│   ├── filters.ts
+│   └── github.ts
+├── App.tsx              # Main application component
+├── index.css            # Global styles
+└── main.tsx            # App entry point
 ```
 
 **Key conventions to follow:**
 
-- All API calls go in `src/services/githubService.ts` — never fetch directly inside a component.
+- All API calls go in `src/services/` — never fetch directly inside a component.
 - All reusable UI pieces go in `src/components/`.
 - All custom hooks go in `src/hooks/`.
 - All TypeScript types go in `src/types/`.
+- Use React Router for new pages in `src/pages/`.
 
 ---
 
@@ -164,8 +181,9 @@ src/
 - Keep components focused: one responsibility per component.
 - Avoid putting data fetching logic directly in JSX — use the `githubService` or a custom hook instead.
 
-### Tailwind CSS
+### Radix UI + Tailwind CSS
 
+- Use Radix UI primitives for complex components (selects, dialogs, etc.).
 - Use Tailwind utility classes for all styling.
 - Use responsive prefixes (`sm:`, `md:`, `lg:`) — **do not write custom CSS for layout**.
 - Avoid arbitrary values (`w-[347px]`) unless absolutely necessary.
@@ -193,7 +211,7 @@ src/
 3. **Verify your work:**
    ```bash
    npm run build   # must pass with no errors
-   npx eslint src/ # must pass with no errors
+   npm run lint   # must pass with no errors
    ```
 
 4. **Commit** with a clear, concise message:
