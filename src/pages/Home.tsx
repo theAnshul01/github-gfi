@@ -32,23 +32,41 @@ const Home = () => {
     }, [])
 
     return (
-        <main className="bg-slate-950 ml-64 font-mono min-h-lvh px-6 py-8">
+        <main className="bg-slate-950 ml-0 md:ml-64 font-mono min-h-lvh px-4 sm:px-6 pt-16 md:pt-6 py-6 sm:py-8 pb-10">
             <section>
-                <header className="flex flex-col items-start gap-2">
-                    <span className="text-[#1b8708] text-sm font-light px-2">$ cd ~/projects/good-first-issues </span>
-                    <h1 className="text-5xl text-[#efecec] mx-0">[OPEN_ISSUES]</h1>
+                <header className="flex flex-col items-start gap-1 sm:gap-2">
+                    <span className="text-[#1b8708] text-xs sm:text-sm font-light px-2">
+                        $ cd ~/projects/good-first-issues
+                    </span>
+                    <h1 className="text-2xl sm:text-3xl md:text-5xl text-[#efecec] mx-0">
+                        [OPEN_ISSUES]
+                    </h1>
                 </header>
-                <div className="text-sm py-4 flex items-center gap-4 p-1">
-                    <p className="bg-slate-800 text-[#6d6b6b] rounded-sm shadow-md text-xs p-1">{`[ TOTAL_ISSUES: ${Math.floor(total / 1000)}k+ ]`}</p>
-                    <p className="bg-slate-800 text-[#1be32b] rounded-sm shadow-md text-xs p-1">[ LATEST_ISSUES: 23 ]</p>
+                <div className="text-sm py-4 flex flex-wrap items-center gap-2 sm:gap-4 p-1">
+                    <p className="bg-slate-800 text-[#6d6b6b] rounded-sm shadow-md text-xs p-1">
+                        {`[ TOTAL_ISSUES: ${Math.floor(total / 1000)}k+ ]`}
+                    </p>
+                    <p className="bg-slate-800 text-[#1be32b] rounded-sm shadow-md text-xs p-1">
+                        [ LATEST_ISSUES: 23 ]
+                    </p>
                 </div>
             </section>
 
-            {loading && <div className="h-96 w-full flex items-center justify-center"><SpinnerElement /></div>}
-            {!loading && <section className="flex items-center gap-6 flex-wrap overflow-hidden">
+            {loading && <div className="h-64 sm:h-96 w-full flex items-center justify-center">
+                <SpinnerElement />
+                </div>}
+            {!loading && <section className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6">
                 {
-                    issues.slice(0, 4)?.map((issue) => <IssueCard path={issue.html_url} title={issue.title} avatar={issue.user.avatar_url} author={issue.user.login} created={issue.created_at} />)
-                }
+                    issues.slice(0, 4)?.map((issue) =>(
+                        <div className="w-full sm:w-[48%] lg:w-[30%]">
+                            <IssueCard path={issue.html_url} 
+                            title={issue.title} 
+                            avatar={issue.user.avatar_url} 
+                            author={issue.user.login}
+                            created={issue.created_at} />
+                        </div>
+                    )
+                )}
             </section>}
         </main>
     )

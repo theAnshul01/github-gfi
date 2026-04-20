@@ -36,51 +36,46 @@ const IssuesPage = () => {
         return () => clearTimeout(timer)
     }, [search])
 
-    let query = "state:open"
-
-    if (label) {
-        query += `+label:${label}`
-    } else {
-        query += `+good-first-issue`
-    }
-
-    if (language) {
-        query += `+language:${language}`
-    }
-    if (debouncedSearch) {
-        query += `+${debouncedSearch}`
-    }
-
     const [totalPage, setTotalPage] = useState<number>(0)
-
-    const url = `https://api.github.com/search/issues?q=${query}&sort=created&order=desc&page=${page}&per_page=${perPage}`
     const [issues, setIssues] = useState<GithubIssue[]>([])
 
     useEffect(() => {
+
+        let query = "state:open";
+        if (label) {
+            query += `+label:${label}`;
+        } else {
+            query += `+good-first-issue`;
+        }
+        if (language) {
+            query += `+language:${language}`;
+        }
+        if (debouncedSearch) {
+            query += `+${debouncedSearch}`;
+        }
+
+        const url = `https://api.github.com/search/issues?q=${query}&sort=created&order=desc&page=${page}&per_page=${perPage}`;
+
         async function fetchIssues() {
-            setEmptySearch(false)
             try {
-                setLoading(true)
-                const response = await fetch(url)
+                setLoading(true);
+                const response = await fetch(url);
                 if (!response.ok) {
-                    throw new Error("An error occurred while fetching issues")
+                    throw new Error("An error occurred while fetching issues");
                 }
-                const data = await response.json()
-                if(data.items.length === 0){
-                    setEmptySearch(true)
-                    console.log(emptySearch)
-                }
-                setIssues(data.items)
-                setTotalPage(Math.min(Math.ceil(data.total_count / perPage), 50))
+                const data = await response.json();
+                setIssues(data.items);
+                setTotalPage(Math.min(Math.ceil(data.total_count / perPage), 50));
+
 
             } catch (error) {
-                console.error(error)
+                console.error(error);
             } finally {
-                setLoading(false)
+                setLoading(false);
             }
         }
-        fetchIssues()
-    }, [page, perPage, language, label, debouncedSearch])
+        fetchIssues();
+    }, [page, perPage, language, label, debouncedSearch]);
 
     useEffect(() => {
         async function loadBookmarks() {
@@ -145,17 +140,18 @@ const IssuesPage = () => {
         <div className="bg-slate-950 py-2">
             {showError && <ErrorMessage message="Login needed for bookmarking the issue!" setShowError={setShowError}/>}
             <Sidebar />
-            <main className="ml-64 bg-slate-950 min-h-lvh px-6 py-8 font-mono">
+            <main className="ml-0 md:ml-64 bg-slate-950 min-h-lvh px-3 sm:px-6 pt-16 md:pt-6 py-6 sm:py-8 pb-10 font-mono">
                 <section>
-                    <p className=" text-[#26de0e] text-sm mb-2"><span>$</span> cd ~/projects/good-first-issues && ls --all --sort=created</p>
+                    <p className="text-[#26de0e] text-xs sm:text-sm mb-2"><span>$</span> cd ~/projects/good-first-issues && ls --all --sort=created</p>
                     <div className="flex items-center bg-slate-800 text-green-500 gap-2">
-                        <p className="px-2 border-r border-slate-500">&gt;</p>
+                        <p className="px-2 border-r border-slate-500 hidden sm:block">&gt;</p>
                         <label htmlFor="search" className="flex-1">
-                            <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder=" FILTER_BY_METADATA..." className="w-full py-2 px-2 my-2 placeholder-slate-500 bg-slate-800 focus:outline-none focus:ring-1 focus:ring-green-500" />
+                            <input type="text" value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="FILTER_BY_METADATA..." className="w-full py-2 px-2 my-2 placeholder-slate-500 bg-slate-800 focus:outline-none focus:ring-1 focus:ring-green-500 text-sm" />
                         </label>
                     </div>
                 </section>
 
+{/* Empty Search State from Main */}
                 {emptySearch && (
                     <div className="flex flex-col items-center justify-center py-20 font-mono">
                         <div className="border border-green-500/30 bg-green-500/5 p-8 rounded-lg max-w-md">
@@ -173,43 +169,71 @@ const IssuesPage = () => {
                         </div>
                     </div>
                 )}
-                {!emptySearch && <table className="w-full text-sm text-slate-400 mt-4">
-                    <thead className="bg-slate-800 border-b border-1 border-slate-400 sticky top-[64px]">
-                        <tr>
-                            <th className="px-4 py-3">Id</th>
-                            <th className="px-4 py-3">Issue</th>
-                            <th className="px-4 py-3">Author</th>
-                            <th className="px-4 py-3">created</th>
-                            <th className="px-4 py-3">bookmark</th>
-                            <th className="px-4 py-3">Visit</th>
-                        </tr>
-                    </thead>
 
-                    {loading && <div className="h-96 ml-64 w-full flex items-center justify-center"><SpinnerElement /></div>}
-                    
-                    {!loading &&  <tbody>
-                        {issues.map((issue) => (
-                            <tr key={issue.id} className="hover:bg-gray-900">
-                                <td className="px-4 py-3 text-right text-[#15e030]">#{String(issue.id).slice(-5)}</td>
-                                <td className="px-4 py-3 text-left">{issue.title}</td>
-                                <td className="flex items-center justify-start px-4 py-3 text-center gap-2 whitespace-nowrap truncate overflow-hidden"><img src={issue.user.avatar_url} alt="user_avatar" className="h-6 w-6 rounded-full" /> {issue.user.login}</td>
-                                <td className="px-4 py-3 text-center whitespace-nowrap">{formatDistanceToNow(issue.created_at, { addSuffix: true })}</td>
-                                <td className="text-center text-xl hover:text-[#11d11b]"> <button onClick={() => handleBookmark(issue)}> {
-                                    bookmarkedIssues.has(issue.id)
-                                        ? <IoBookmark />
-                                        : <IoBookmarkOutline />
-                                }</button>  </td>
-                                <td className="text-2xl text-center hover:text-[#11d11b]"><a href={issue.html_url} target="_blank"> &rarr;</a></td>
-                            </tr>
-                        ))}
-                    </tbody>}
-                </table>}
+                {/* Responsive Table Wrapper from your branch */}
+                {!emptySearch && (
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-xs sm:text-sm text-slate-400 mt-4">
+                            <thead className="bg-slate-800 border-b border-1 border-slate-400 sticky top-[64px]">
+                                <tr>
+                                    <th className="px-2 sm:px-4 py-2 sm:py-3 text-left">Id</th>
+                                    <th className="px-2 sm:px-4 py-2 sm:py-3 text-left">Issue</th>
+                                    <th className="px-2 sm:px-4 py-2 sm:py-3 hidden sm:table-cell text-left">Author</th>
+                                    <th className="px-2 sm:px-4 py-2 sm:py-3 hidden md:table-cell text-left">Created</th>
+                                    {/* Keep Bookmark column from Main */}
+                                    <th className="px-2 sm:px-4 py-2 sm:py-3 text-center">Bookmark</th>
+                                    <th className="px-2 sm:px-4 py-2 sm:py-3 text-center">Visit</th>
+                                </tr>
+                            </thead>
 
+                            {loading && (
+                                <div className="h-96 w-full flex items-center justify-center">
+                                    <SpinnerElement />
+                                </div>
+                            )}
+
+                            {!loading && (
+                                <tbody>
+                                    {issues.map((issue) => (
+                                        <tr key={issue.id} className="hover:bg-gray-900">
+                                            <td className="px-2 sm:px-4 py-2 sm:py-3 text-right text-[#15e030]" title={`#${issue.id}`}>
+                                                #{String(issue.id).slice(-5)}
+                                            </td>
+                                            <td className="px-2 sm:px-4 py-2 sm:py-3 text-left truncate max-w-[150px] xs:max-w-xs sm:max-w-md">
+                                                {issue.title}
+                                            </td>
+                                            <td className="hidden sm:table-cell px-2 sm:px-4 py-2 sm:py-3 text-left">
+                                                <div className="flex items-center gap-2 whitespace-nowrap">
+                                                    <img src={issue.user.avatar_url} alt="user_avatar" className="h-5 w-5 sm:h-6 sm:w-6 rounded-full flex-shrink-0" />
+                                                    <span className="truncate">{issue.user.login}</span>
+                                                </div>
+                                            </td>
+                                            <td className="hidden md:table-cell px-2 sm:px-4 py-2 sm:py-3 text-left whitespace-nowrap">
+                                                {formatDistanceToNow(issue.created_at, { addSuffix: true })}
+                                            </td>
+                                            {/* Merged Bookmark Button logic */}
+                                            <td className="text-lg sm:text-xl text-center hover:text-[#11d11b] px-2 sm:px-4 py-2 sm:py-3">
+                                                <button onClick={() => handleBookmark(issue)}>
+                                                    {bookmarkedIssues.has(issue.id) ? <IoBookmark /> : <IoBookmarkOutline />}
+                                                </button>
+                                            </td>
+                                            <td className="text-lg sm:text-2xl text-center hover:text-[#11d11b] px-2 sm:px-4 py-2 sm:py-3">
+                                                <a href={issue.html_url} target="_blank" rel="noreferrer"> &rarr;</a>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            )}
+                        </table>
+                    </div>
+                )}
 
             </main>
-            <section className="ml-64 bg-slate-950 mb-4">
-                <IssuePagePagination
-                    page={page}
+
+            <section className="ml-0 md:ml-64 bg-slate-950 mb-8 px-3 sm:px-6">
+                <IssuePagePagination 
+                    page = {page}
+
                     totalPage={totalPage}
                     perPage={perPage}
                 />
