@@ -11,10 +11,10 @@ type IssueCardProps = {
 const IssueCard = ({ path, title, avatar, author, created }: IssueCardProps) => {
     return (
         <a href={path} target="_blank">
-            <div className="w-96 h-80 border hover:border-green-500 border-[#783434] p-8 font-mono">
+            <div className="w-full min-h-64 border hover:border-green-500 border-[#783434] p-4 sm:p-8 font-mono">
                 <section className="mb-2">
                     <p className="italic text-green-700 text-xs mb-6 whitespace-nowrap truncate overflow-hidden">{`path: ${path}`}</p>
-                    <h1 className="text-gray-200 font-space text-3xl whitespace-nowrap truncate overflow-hidden">{title}</h1>
+                    <h1 className="text-gray-200 font-space text-xl sm:text-3xl truncate overflow-hidden">{title}</h1>
                 </section>
                 <section className="text-xs flex flex-col gap-1">
                     <span className="w-fit text-yellow-600 bg-yellow-500/10 border border-yellow-600 p-1">[ label: "good first issues" ]</span>
