@@ -53,7 +53,7 @@ const IssuesPage = () => {
 
     const [totalPage, setTotalPage] = useState<number>(0)
 
-    const url = `https://api.github.com/search/issues?q=${query}&sort=created&order=desc&page=${page}&per_page=${perPage}`
+    const url = `/api/issues?q=${query}&page=${page}&per_page=${perPage}`
     const [issues, setIssues] = useState<GithubIssue[]>([])
 
     useEffect(() => {

@@ -20,16 +20,16 @@ import { Analytics } from "@vercel/analytics/react"
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-    <Theme>
-      <ErrorBoundary>
-        <TopNavbar/>
-        <Routes>
-          <Route path="/*" element={<App />} />
-          <Route path="/issues" element={<IssuesPage/>}/>
-          <Route path="/bookmark" element={<Bookmarks/>} />
-          <Route path="/login" element={<Login/>} />
-        </Routes>
-      </ErrorBoundary>
+      <Theme>
+        <ErrorBoundary>
+          <TopNavbar />
+          <Routes>
+            <Route path="/*" element={<App />} />
+            <Route path="/issues" element={<IssuesPage />} />
+            <Route path="/bookmark" element={<Bookmarks />} />
+            <Route path="/login" element={<Login />} />
+          </Routes>
+        </ErrorBoundary>
       </Theme>
       <Analytics />
     </BrowserRouter>
