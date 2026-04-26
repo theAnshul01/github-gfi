@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node"
-import { redis } from "../src/lib/redis.ts"
+import { redis } from "../src/lib/redis"
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     const { page = 1, per_page = 20, language, label, search } = req.query
