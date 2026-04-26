@@ -15,7 +15,7 @@ import "@radix-ui/themes/styles.css";
 import { Theme } from "@radix-ui/themes";
 import Bookmarks from './pages/Bookmarks.tsx';
 import Login from './pages/Login.tsx';
-
+import { Analytics } from "@vercel/analytics/react"
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -31,6 +31,7 @@ createRoot(document.getElementById('root')!).render(
         </Routes>
       </ErrorBoundary>
       </Theme>
+      <Analytics />
     </BrowserRouter>
   </StrictMode>,
 )
