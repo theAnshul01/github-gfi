@@ -18,12 +18,12 @@ const Footer = () => {
 
 
     return (
-        <footer className='fixed bottom-0 min-w-full bg-[#2ce207] font-mono text-sm px-4'>
+        <footer className='fixed bottom-0 w-full bg-[#2ce207] font-mono text-sm px-4 z-50'>
             <div className='flex items-center justify-between'>
                 <div className='flex items-center justify-between gap-4'>
-                    <p> [STATUS: {status[randomStatusVal]}] | </p>
-                    <p>ENCODING: UTF-8 |</p>
-                    <p>POS: LN {randomLn}, COL {randomCol}</p>
+                    <p className='hidden lg:block'> [STATUS: {status[randomStatusVal]}] | </p>
+                    <p className='hidden lg:block'>ENCODING: UTF-8 |</p>
+                    <p className='hidden md:block'>POS: LN {randomLn}, COL {randomCol}</p>
                 </div>
                 <div className='flex items-center justify-between gap-4'>
                     <div className="flex items-center justify-between gap-1"><FaGithub /> <a href="https://github.com/theAnshul01/github-gfi" target="_blank" rel="noopener noreferrer">GITHUB</a></div>

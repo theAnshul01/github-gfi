@@ -35,7 +35,7 @@ By participating in this project, you agree to keep interactions respectful and 
 - **Radix UI Themes** + **Tailwind CSS** — UI components and styling
 - **Supabase** — authentication and bookmark storage
 - **React Router** — client-side routing for multiple pages
-- **GitHub REST API** — data source (via `src/services/githubService.ts`)
+- **GitHub REST API** — direct API integration (via `src/services/githubService.ts`)
 
 The goal is to make it easy for developers — especially newcomers to open source — to find beginner-friendly issues across GitHub, bookmark them, and track progress.
 
@@ -62,9 +62,10 @@ Looking for a place to start? Here are well-scoped tasks that are great for firs
 
 | Task | Description | Skill Level |
 |---|---|---|
-| **Mobile responsiveness** | The Navbar, filters, and cards break on small screens. Use Tailwind's `sm:` / `md:` breakpoints to fix them. | Beginner |
 | **Improve error handling UI** | Show a user-friendly error message when the GitHub API fails or rate-limits the request. | Beginner–Intermediate |
 | **Add empty state UI** | Show a helpful message and illustration when no issues match the search/filter. | Beginner |
+
+> **✅ Recently Completed:** Mobile responsiveness has been fixed - Navbar, language filters, and issue cards now work properly on all screen sizes.
 
 ### ✨ Enhancements
 
@@ -86,7 +87,16 @@ Looking for a place to start? Here are well-scoped tasks that are great for firs
 - **Node.js** v20 or later
 - **npm** (comes with Node)
 - A [Supabase project](https://supabase.com) for local development (optional for basic features)
-- A [GitHub personal access token](https://github.com/settings/tokens) is optional but recommended to avoid hitting API rate limits during development.
+- A [GitHub personal access token](https://github.com/settings/tokens) is optional but recommended to avoid hitting API rate limits during development
+
+### Environment Setup
+
+Create a `.env` file in the root directory:
+
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
 ### Steps
 
@@ -107,7 +117,7 @@ The app will be available at `http://localhost:5173`.
 ### Other Useful Commands
 
 ```bash
-# Type-check the project
+# Build for production
 npm run build
 
 # Lint the codebase

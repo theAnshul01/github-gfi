@@ -26,7 +26,7 @@ const Bookmarks = () => {
   useEffect(() => {
     if (!user) {
       const timer = setTimeout(() => {
-        navigate("/")
+        navigate("/login")
       }, 5000)
       const countdown = setInterval(() => {
         setRedirectCountdown(prev => {
@@ -69,12 +69,12 @@ const Bookmarks = () => {
           <p className="text-red-500 text-sm mb-2">$ error: ACCESS_DENIED</p>
           <h2 className="text-2xl text-[#efecec] mb-4">[ UNAUTHORIZED ]</h2>
           <p className="text-[#6d6b6b] mb-4">// You need to login to access bookmarks</p>
-          <p className="text-[#6d6b6b] text-sm">// Redirecting to homepage in {redirectCountdown} seconds...</p>
+          <p className="text-[#6d6b6b] text-sm">// Redirecting to login page in {redirectCountdown} seconds...</p>
           <button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/login")}
             className="mt-6 bg-slate-800 hover:bg-slate-700 text-[#efecec] px-4 py-2 rounded-sm transition-colors border border-slate-600"
           >
-            Go to Homepage
+            Go to Login
           </button>
         </div>
       </div>
@@ -83,7 +83,7 @@ const Bookmarks = () => {
 
   return (
     <div className="bg-slate-950 font-mono min-h-[calc(100vh-4rem)]">
-      <main className="ml-64 px-6 py-8">
+      <main className="lg:ml-64 px-6 py-8 pb-20">
         <header className="mb-8">
           <div className="flex items-center gap-2 mb-2">
             <FaBookmark className="text-[#1be32b] text-xl" />

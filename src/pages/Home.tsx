@@ -32,7 +32,7 @@ const Home = () => {
     }, [])
 
     return (
-        <main className="bg-slate-950 ml-64 font-mono min-h-lvh px-6 py-8">
+        <main className="bg-slate-950 lg:ml-64 font-mono min-h-lvh px-6 py-8 pb-20">
             <section>
                 <header className="flex flex-col items-start gap-2">
                     <span className="text-[#1b8708] text-sm font-light px-2">$ cd ~/projects/good-first-issues </span>
@@ -45,7 +45,7 @@ const Home = () => {
             </section>
 
             {loading && <div className="h-96 w-full flex items-center justify-center"><SpinnerElement /></div>}
-            {!loading && <section className="flex items-center gap-6 flex-wrap overflow-hidden">
+            {!loading && <section className="flex items-center gap-6 flex-wrap justify-center">
                 {
                     issues.slice(0, 4)?.map((issue) => <IssueCard path={issue.html_url} title={issue.title} avatar={issue.user.avatar_url} author={issue.user.login} created={issue.created_at} />)
                 }

@@ -1,5 +1,5 @@
 import { supabase } from "../services/SupabaseClient"
-import { FaGithub, FaCode, FaLaptopCode, FaUsers, FaRocket, FaBook } from "react-icons/fa";
+import { FaGithub, FaCode, FaLaptopCode, FaUsers, FaRocket, FaBook, FaHome } from "react-icons/fa";
 import { useAuth } from "../hooks/useAuth"
 import { useNavigate } from "react-router-dom"
 
@@ -75,9 +75,18 @@ const Login = () => {
             <section className="w-full lg:w-1/2 flex items-center justify-center h-full">
                 <div className="bg-slate-900 border border-slate-700 p-8 w-full h-full">
                     <div className="max-w-md mx-auto h-full flex flex-col justify-center">
-                        <header className="mb-6">
-                            <span className="text-[#1b8708] text-sm font-light">$ cd ~/good-first-issues</span>
-                            <h2 className="text-2xl text-[#efecec] mt-2">{user ? "[ PROFILE ]" : "[ AUTHENTICATE ]"}</h2>
+                        <header className="mb-6 flex items-center justify-between">
+                            <div>
+                                <span className="text-[#1b8708] text-sm font-light">$ cd ~/good-first-issues</span>
+                                <h2 className="text-2xl text-[#efecec] mt-2">{user ? "[ PROFILE ]" : "[ AUTHENTICATE ]"}</h2>
+                            </div>
+                            <button
+                                onClick={() => navigate("/")}
+                                className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-[#efecec] px-3 py-2 rounded-sm transition-colors border border-slate-600"
+                            >
+                                <FaHome />
+                                <span className="text-sm">Home</span>
+                            </button>
                         </header>
 
                         {
